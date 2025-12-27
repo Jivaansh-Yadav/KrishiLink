@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { Header } from '@/components/Header';
-import { Footer } from '@/components/Footer';
+import Header from '@/components/Header';
+import Footer from '@/components/Footer';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
@@ -39,6 +39,10 @@ const AdminDashboard: React.FC = () => {
   const [buyerSearch, setBuyerSearch] = useState('');
   const [farmerPage, setFarmerPage] = useState(1);
   const [buyerPage, setBuyerPage] = useState(1);
+
+  const getFullName = (u: UserProfile) => {
+    return `${u.first_name} ${u.last_name || ''}`.trim();
+  };
 
   useEffect(() => {
     if (!authLoading && !user) {
@@ -93,15 +97,15 @@ const AdminDashboard: React.FC = () => {
   };
 
   const filteredFarmers = farmers.filter(f =>
-    f.full_name?.toLowerCase().includes(farmerSearch.toLowerCase()) ||
+    getFullName(f).toLowerCase().includes(farmerSearch.toLowerCase()) ||
     f.email?.toLowerCase().includes(farmerSearch.toLowerCase()) ||
-    f.phone?.includes(farmerSearch)
+    f.mobile_number?.includes(farmerSearch)
   );
 
   const filteredBuyers = buyers.filter(b =>
-    b.full_name?.toLowerCase().includes(buyerSearch.toLowerCase()) ||
+    getFullName(b).toLowerCase().includes(buyerSearch.toLowerCase()) ||
     b.email?.toLowerCase().includes(buyerSearch.toLowerCase()) ||
-    b.phone?.includes(buyerSearch)
+    b.mobile_number?.includes(buyerSearch)
   );
 
   const paginatedFarmers = filteredFarmers.slice(
@@ -182,11 +186,11 @@ const AdminDashboard: React.FC = () => {
                     <TableCell className="font-medium">
                       <div className="flex items-center gap-2">
                         {roleIcon}
-                        {u.full_name}
+                        {getFullName(u)}
                       </div>
                     </TableCell>
                     <TableCell>{u.email}</TableCell>
-                    <TableCell>{u.phone || '-'}</TableCell>
+                    <TableCell>{u.mobile_number || '-'}</TableCell>
                     <TableCell>{u.state || '-'}</TableCell>
                     <TableCell>
                       {new Date(u.created_at).toLocaleDateString('en-IN')}
@@ -231,7 +235,7 @@ const AdminDashboard: React.FC = () => {
     <div className="min-h-screen flex flex-col bg-background">
       <Header />
       
-      <main className="flex-1 container mx-auto px-4 py-8">
+      <main className="flex-1 container mx-auto px-4 py-8 mt-16">
         {/* Stats Cards */}
         <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mb-8">
           <Card>

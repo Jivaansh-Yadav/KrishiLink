@@ -37,6 +37,9 @@ export const indianStates = [
   { code: "WB", name: "West Bengal" },
 ];
 
+// Simple state name array for dropdowns
+export const stateNames = indianStates.map(s => s.name);
+
 export const languages = [
   { code: "en", name: "English", nativeName: "English" },
   { code: "hi", name: "Hindi", nativeName: "हिन्दी" },
@@ -52,39 +55,40 @@ export const languages = [
   { code: "te", name: "Telugu", nativeName: "తెలుగు" },
 ];
 
-export const mspData = {
-  kharif: [
-    { crop: "Paddy (Common)", priceQuintal: 2300, priceKg: 23 },
-    { crop: "Paddy (Grade A)", priceQuintal: 2320, priceKg: 23.2 },
-    { crop: "Jowar (Hybrid)", priceQuintal: 3371, priceKg: 33.71 },
-    { crop: "Jowar (Maldandi)", priceQuintal: 3421, priceKg: 34.21 },
-    { crop: "Bajra", priceQuintal: 2625, priceKg: 26.25 },
-    { crop: "Ragi", priceQuintal: 4290, priceKg: 42.9 },
-    { crop: "Maize", priceQuintal: 2225, priceKg: 22.25 },
-    { crop: "Tur (Arhar)", priceQuintal: 7550, priceKg: 75.5 },
-    { crop: "Moong", priceQuintal: 8682, priceKg: 86.82 },
-    { crop: "Urad", priceQuintal: 7400, priceKg: 74 },
-    { crop: "Groundnut", priceQuintal: 6783, priceKg: 67.83 },
-    { crop: "Sunflower Seed", priceQuintal: 7280, priceKg: 72.8 },
-    { crop: "Soyabean (Yellow)", priceQuintal: 4892, priceKg: 48.92 },
-    { crop: "Sesamum", priceQuintal: 9267, priceKg: 92.67 },
-    { crop: "Nigerseed", priceQuintal: 8717, priceKg: 87.17 },
-    { crop: "Cotton (Medium)", priceQuintal: 7121, priceKg: 71.21 },
-    { crop: "Cotton (Long Staple)", priceQuintal: 7121, priceKg: 71.21 },
-  ],
-  rabi: [
-    { crop: "Wheat", priceQuintal: 2425, priceKg: 24.25 },
-    { crop: "Barley", priceQuintal: 1980, priceKg: 19.8 },
-    { crop: "Gram", priceQuintal: 5650, priceKg: 56.5 },
-    { crop: "Masur (Lentil)", priceQuintal: 6700, priceKg: 67 },
-    { crop: "Rapeseed & Mustard", priceQuintal: 5950, priceKg: 59.5 },
-    { crop: "Safflower", priceQuintal: 5940, priceKg: 59.4 },
-    { crop: "Toria", priceQuintal: 5950, priceKg: 59.5 },
-  ],
-  commercial: [
-    { crop: "Copra (Milling)", priceQuintal: 11160, priceKg: 111.6 },
-    { crop: "Copra (Ball)", priceQuintal: 12000, priceKg: 120 },
-    { crop: "De-Husked Coconut", priceQuintal: 3013, priceKg: 30.13 },
-    { crop: "Jute", priceQuintal: 5335, priceKg: 53.35 },
-  ],
-};
+export const cropTypes = [
+  'Cereals',
+  'Pulses',
+  'Oilseeds',
+  'Vegetables',
+  'Fruits',
+  'Spices',
+  'Commercial Crops',
+  'Fibers',
+  'Other',
+];
+
+export const mspRates = [
+  { crop: 'Paddy (Common)', msp: 2300, category: 'Kharif' },
+  { crop: 'Paddy (Grade A)', msp: 2320, category: 'Kharif' },
+  { crop: 'Jowar (Hybrid)', msp: 3371, category: 'Kharif' },
+  { crop: 'Bajra', msp: 2625, category: 'Kharif' },
+  { crop: 'Ragi', msp: 4290, category: 'Kharif' },
+  { crop: 'Maize', msp: 2225, category: 'Kharif' },
+  { crop: 'Tur (Arhar)', msp: 7550, category: 'Kharif' },
+  { crop: 'Moong', msp: 8682, category: 'Kharif' },
+  { crop: 'Urad', msp: 7400, category: 'Kharif' },
+  { crop: 'Groundnut', msp: 6783, category: 'Kharif' },
+  { crop: 'Sunflower Seed', msp: 7280, category: 'Kharif' },
+  { crop: 'Soyabean (Yellow)', msp: 4892, category: 'Kharif' },
+  { crop: 'Sesamum', msp: 9267, category: 'Kharif' },
+  { crop: 'Cotton (Medium)', msp: 7121, category: 'Kharif' },
+  { crop: 'Wheat', msp: 2425, category: 'Rabi' },
+  { crop: 'Barley', msp: 1980, category: 'Rabi' },
+  { crop: 'Gram', msp: 5650, category: 'Rabi' },
+  { crop: 'Masur (Lentil)', msp: 6700, category: 'Rabi' },
+  { crop: 'Rapeseed & Mustard', msp: 5950, category: 'Rabi' },
+  { crop: 'Safflower', msp: 5940, category: 'Rabi' },
+  { crop: 'Copra (Milling)', msp: 11160, category: 'Commercial' },
+  { crop: 'Jute', msp: 5335, category: 'Commercial' },
+  { crop: 'Sugarcane', msp: 3150, category: 'Commercial' },
+];
