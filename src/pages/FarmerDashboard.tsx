@@ -1,0 +1,263 @@
+import React, { useState, useEffect } from 'react';
+import { useNavigate } from 'react-router-dom';
+import { Header } from '@/components/Header';
+import { Footer } from '@/components/Footer';
+import { WeatherCard } from '@/components/WeatherCard';
+import { MSPListModal } from '@/components/MSPListModal';
+import { CropDiseaseModal } from '@/components/CropDiseaseModal';
+import { AIChatModal } from '@/components/AIChatModal';
+import { AddCropModal } from '@/components/AddCropModal';
+import { CropCard } from '@/components/CropCard';
+import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
+import { Button } from '@/components/ui/button';
+import { Badge } from '@/components/ui/badge';
+import { 
+  User, MapPin, Phone, Mail, Plus, IndianRupee, Bug, 
+  MessageSquare, Users, Wheat, Loader2, Edit
+} from 'lucide-react';
+import { useAuth } from '@/contexts/AuthContext';
+import { supabase } from '@/integrations/supabase/client';
+import { toast } from 'sonner';
+
+interface Crop {
+  id: string;
+  crop_name: string;
+  crop_type: string;
+  quantity: number;
+  unit: string;
+  price_per_unit: number;
+  description?: string;
+  harvest_date?: string;
+  location?: string;
+  state?: string;
+  image_url?: string;
+  status: string;
+}
+
+const FarmerDashboard: React.FC = () => {
+  const navigate = useNavigate();
+  const { user, profile, loading: authLoading } = useAuth();
+  
+  const [crops, setCrops] = useState<Crop[]>([]);
+  const [loadingCrops, setLoadingCrops] = useState(true);
+  
+  const [showMSP, setShowMSP] = useState(false);
+  const [showDisease, setShowDisease] = useState(false);
+  const [showAIChat, setShowAIChat] = useState(false);
+  const [showAddCrop, setShowAddCrop] = useState(false);
+
+  useEffect(() => {
+    if (!authLoading && !user) {
+      navigate('/');
+      toast.error('Please login to access dashboard');
+    }
+  }, [user, authLoading, navigate]);
+
+  useEffect(() => {
+    if (user) {
+      fetchCrops();
+    }
+  }, [user]);
+
+  const fetchCrops = async () => {
+    if (!user) return;
+    
+    setLoadingCrops(true);
+    try {
+      const { data, error } = await supabase
+        .from('crops')
+        .select('*')
+        .eq('farmer_id', user.id)
+        .order('created_at', { ascending: false });
+
+      if (error) throw error;
+      setCrops(data || []);
+    } catch (error: any) {
+      console.error('Fetch crops error:', error);
+      toast.error('Failed to load crops');
+    } finally {
+      setLoadingCrops(false);
+    }
+  };
+
+  if (authLoading) {
+    return (
+      <div className="min-h-screen flex items-center justify-center">
+        <Loader2 className="h-8 w-8 animate-spin text-primary" />
+      </div>
+    );
+  }
+
+  if (!user || profile?.role !== 'farmer') {
+    return null;
+  }
+
+  const location = profile?.state || 'Delhi';
+
+  return (
+    <div className="min-h-screen flex flex-col bg-background">
+      <Header />
+      
+      <main className="flex-1 container mx-auto px-4 py-8">
+        <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
+          {/* Left Column - User Info & Quick Actions */}
+          <div className="space-y-6">
+            {/* User Info Card */}
+            <Card>
+              <CardHeader className="pb-3">
+                <CardTitle className="text-lg flex items-center gap-2">
+                  <User className="h-5 w-5" />
+                  Profile
+                </CardTitle>
+              </CardHeader>
+              <CardContent className="space-y-3">
+                <div className="flex items-center gap-3">
+                  <div className="h-16 w-16 rounded-full bg-primary/10 flex items-center justify-center overflow-hidden">
+                    {profile?.avatar_url ? (
+                      <img src={profile.avatar_url} alt="Avatar" className="h-full w-full object-cover" />
+                    ) : (
+                      <User className="h-8 w-8 text-primary" />
+                    )}
+                  </div>
+                  <div>
+                    <h3 className="font-semibold">{profile?.full_name}</h3>
+                    <Badge variant="outline" className="mt-1">
+                      <Wheat className="h-3 w-3 mr-1" />
+                      Farmer
+                    </Badge>
+                  </div>
+                </div>
+                
+                <div className="space-y-2 text-sm">
+                  {profile?.phone && (
+                    <div className="flex items-center gap-2 text-muted-foreground">
+                      <Phone className="h-4 w-4" />
+                      {profile.phone}
+                    </div>
+                  )}
+                  {profile?.email && (
+                    <div className="flex items-center gap-2 text-muted-foreground">
+                      <Mail className="h-4 w-4" />
+                      {profile.email}
+                    </div>
+                  )}
+                  {profile?.state && (
+                    <div className="flex items-center gap-2 text-muted-foreground">
+                      <MapPin className="h-4 w-4" />
+                      {profile.state}
+                    </div>
+                  )}
+                </div>
+
+                <Button 
+                  variant="outline" 
+                  size="sm" 
+                  className="w-full mt-2"
+                  onClick={() => navigate('/profile')}
+                >
+                  <Edit className="h-4 w-4 mr-2" />
+                  Edit Profile
+                </Button>
+              </CardContent>
+            </Card>
+
+            {/* Weather Card */}
+            <WeatherCard location={location} />
+
+            {/* Quick Actions */}
+            <Card>
+              <CardHeader className="pb-3">
+                <CardTitle className="text-lg">Quick Actions</CardTitle>
+              </CardHeader>
+              <CardContent className="grid grid-cols-2 gap-3">
+                <Button 
+                  variant="outline" 
+                  className="h-auto py-4 flex-col gap-2"
+                  onClick={() => setShowMSP(true)}
+                >
+                  <IndianRupee className="h-5 w-5 text-primary" />
+                  <span className="text-xs">MSP List</span>
+                </Button>
+                <Button 
+                  variant="outline" 
+                  className="h-auto py-4 flex-col gap-2"
+                  onClick={() => setShowDisease(true)}
+                >
+                  <Bug className="h-5 w-5 text-orange-500" />
+                  <span className="text-xs">Disease Check</span>
+                </Button>
+                <Button 
+                  variant="outline" 
+                  className="h-auto py-4 flex-col gap-2"
+                  onClick={() => setShowAIChat(true)}
+                >
+                  <MessageSquare className="h-5 w-5 text-blue-500" />
+                  <span className="text-xs">AI Assistant</span>
+                </Button>
+                <Button 
+                  variant="outline" 
+                  className="h-auto py-4 flex-col gap-2"
+                  onClick={() => navigate('/buyers')}
+                >
+                  <Users className="h-5 w-5 text-green-500" />
+                  <span className="text-xs">Find Buyers</span>
+                </Button>
+              </CardContent>
+            </Card>
+          </div>
+
+          {/* Right Column - My Crops */}
+          <div className="lg:col-span-2">
+            <Card>
+              <CardHeader className="flex flex-row items-center justify-between">
+                <CardTitle className="text-xl flex items-center gap-2">
+                  <Wheat className="h-5 w-5 text-primary" />
+                  My Crops
+                </CardTitle>
+                <Button onClick={() => setShowAddCrop(true)}>
+                  <Plus className="h-4 w-4 mr-2" />
+                  Add Crop
+                </Button>
+              </CardHeader>
+              <CardContent>
+                {loadingCrops ? (
+                  <div className="flex items-center justify-center py-12">
+                    <Loader2 className="h-8 w-8 animate-spin text-primary" />
+                  </div>
+                ) : crops.length === 0 ? (
+                  <div className="text-center py-12">
+                    <Wheat className="h-12 w-12 mx-auto text-muted-foreground mb-4" />
+                    <h3 className="font-semibold mb-2">No crops listed yet</h3>
+                    <p className="text-muted-foreground mb-4">
+                      Start by adding your first crop to connect with buyers
+                    </p>
+                    <Button onClick={() => setShowAddCrop(true)}>
+                      <Plus className="h-4 w-4 mr-2" />
+                      Add Your First Crop
+                    </Button>
+                  </div>
+                ) : (
+                  <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                    {crops.map((crop) => (
+                      <CropCard key={crop.id} crop={crop} />
+                    ))}
+                  </div>
+                )}
+              </CardContent>
+            </Card>
+          </div>
+        </div>
+      </main>
+
+      <Footer />
+
+      {/* Modals */}
+      <MSPListModal open={showMSP} onOpenChange={setShowMSP} />
+      <CropDiseaseModal open={showDisease} onOpenChange={setShowDisease} />
+      <AIChatModal open={showAIChat} onOpenChange={setShowAIChat} />
+      <AddCropModal open={showAddCrop} onOpenChange={setShowAddCrop} onSuccess={fetchCrops} />
+    </div>
+  );
+};
+
+export default FarmerDashboard;
