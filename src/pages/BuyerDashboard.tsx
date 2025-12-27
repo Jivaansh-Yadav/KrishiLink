@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { Header } from '@/components/Header';
-import { Footer } from '@/components/Footer';
+import Header from '@/components/Header';
+import Footer from '@/components/Footer';
 import { MSPListModal } from '@/components/MSPListModal';
 import { CropCard } from '@/components/CropCard';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
@@ -22,7 +22,7 @@ import {
 import { useAuth } from '@/contexts/AuthContext';
 import { supabase } from '@/integrations/supabase/client';
 import { toast } from 'sonner';
-import { cropTypes, indianStates } from '@/data/indianStates';
+import { cropTypes, stateNames } from '@/data/indianStates';
 
 interface CropWithFarmer {
   id: string;
@@ -57,6 +57,11 @@ const BuyerDashboard: React.FC = () => {
   const [cropTypeFilter, setCropTypeFilter] = useState('');
   const [stateFilter, setStateFilter] = useState('');
 
+  const getFullName = () => {
+    if (!profile) return '';
+    return `${profile.first_name} ${profile.last_name || ''}`.trim();
+  };
+
   useEffect(() => {
     if (!authLoading && !user) {
       navigate('/');
@@ -75,17 +80,34 @@ const BuyerDashboard: React.FC = () => {
         .from('crops')
         .select(`
           *,
-          farmer:users!crops_farmer_id_fkey (
-            full_name,
-            phone,
+          users!crops_user_id_fkey (
+            first_name,
+            last_name,
+            mobile_number,
             email
           )
         `)
-        .eq('status', 'available')
         .order('created_at', { ascending: false });
 
       if (error) throw error;
-      setCrops(data || []);
+      
+      // Map DB fields to component fields
+      const mappedCrops = (data || []).map(c => ({
+        id: c.id,
+        crop_name: c.crop_name,
+        crop_type: 'Cereals',
+        quantity: c.quantity_kg,
+        unit: 'kg',
+        price_per_unit: c.price_per_kg,
+        image_url: c.photo_url,
+        status: 'available',
+        farmer: c.users ? {
+          full_name: `${c.users.first_name} ${c.users.last_name || ''}`.trim(),
+          phone: c.users.mobile_number,
+          email: c.users.email,
+        } : undefined,
+      }));
+      setCrops(mappedCrops);
     } catch (error: any) {
       console.error('Fetch crops error:', error);
       toast.error('Failed to load crops');
@@ -119,7 +141,7 @@ const BuyerDashboard: React.FC = () => {
     <div className="min-h-screen flex flex-col bg-background">
       <Header />
       
-      <main className="flex-1 container mx-auto px-4 py-8">
+      <main className="flex-1 container mx-auto px-4 py-8 mt-16">
         <div className="grid grid-cols-1 lg:grid-cols-4 gap-6">
           {/* Left Column - User Info & Filters */}
           <div className="space-y-6">
@@ -134,14 +156,14 @@ const BuyerDashboard: React.FC = () => {
               <CardContent className="space-y-3">
                 <div className="flex items-center gap-3">
                   <div className="h-16 w-16 rounded-full bg-primary/10 flex items-center justify-center overflow-hidden">
-                    {profile?.avatar_url ? (
-                      <img src={profile.avatar_url} alt="Avatar" className="h-full w-full object-cover" />
+                    {profile?.profile_photo ? (
+                      <img src={profile.profile_photo} alt="Avatar" className="h-full w-full object-cover" />
                     ) : (
                       <User className="h-8 w-8 text-primary" />
                     )}
                   </div>
                   <div>
-                    <h3 className="font-semibold">{profile?.full_name}</h3>
+                    <h3 className="font-semibold">{getFullName()}</h3>
                     <Badge variant="outline" className="mt-1">
                       <ShoppingCart className="h-3 w-3 mr-1" />
                       Buyer
@@ -150,10 +172,10 @@ const BuyerDashboard: React.FC = () => {
                 </div>
                 
                 <div className="space-y-2 text-sm">
-                  {profile?.phone && (
+                  {profile?.mobile_number && (
                     <div className="flex items-center gap-2 text-muted-foreground">
                       <Phone className="h-4 w-4" />
-                      {profile.phone}
+                      {profile.mobile_number}
                     </div>
                   )}
                   {profile?.email && (
@@ -218,7 +240,7 @@ const BuyerDashboard: React.FC = () => {
                     </SelectTrigger>
                     <SelectContent>
                       <SelectItem value="">All states</SelectItem>
-                      {indianStates.map((state) => (
+                      {stateNames.map((state) => (
                         <SelectItem key={state} value={state}>{state}</SelectItem>
                       ))}
                     </SelectContent>

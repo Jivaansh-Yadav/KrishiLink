@@ -20,7 +20,7 @@ import { Upload, Loader2, Plus } from 'lucide-react';
 import { toast } from 'sonner';
 import { supabase } from '@/integrations/supabase/client';
 import { useAuth } from '@/contexts/AuthContext';
-import { cropTypes, indianStates } from '@/data/indianStates';
+import { cropTypes, stateNames } from '@/data/indianStates';
 
 interface AddCropModalProps {
   open: boolean;
@@ -38,12 +38,8 @@ export const AddCropModal: React.FC<AddCropModalProps> = ({ open, onOpenChange, 
     cropName: '',
     cropType: '',
     quantity: '',
-    unit: 'kg',
-    pricePerUnit: '',
+    pricePerKg: '',
     description: '',
-    harvestDate: '',
-    location: '',
-    state: '',
   });
 
   const handleImageChange = (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -65,7 +61,7 @@ export const AddCropModal: React.FC<AddCropModalProps> = ({ open, onOpenChange, 
       return;
     }
 
-    if (!formData.cropName || !formData.cropType || !formData.quantity || !formData.pricePerUnit) {
+    if (!formData.cropName || !formData.quantity || !formData.pricePerKg) {
       toast.error('Please fill all required fields');
       return;
     }
@@ -73,7 +69,7 @@ export const AddCropModal: React.FC<AddCropModalProps> = ({ open, onOpenChange, 
     setLoading(true);
 
     try {
-      let imageUrl = null;
+      let photoUrl = null;
 
       // Upload image if provided
       if (imageFile) {
@@ -90,24 +86,17 @@ export const AddCropModal: React.FC<AddCropModalProps> = ({ open, onOpenChange, 
           const { data: urlData } = supabase.storage
             .from('crop-images')
             .getPublicUrl(fileName);
-          imageUrl = urlData.publicUrl;
+          photoUrl = urlData.publicUrl;
         }
       }
 
       // Insert crop record
       const { error } = await supabase.from('crops').insert({
-        farmer_id: user.id,
+        user_id: user.id,
         crop_name: formData.cropName,
-        crop_type: formData.cropType,
-        quantity: parseFloat(formData.quantity),
-        unit: formData.unit,
-        price_per_unit: parseFloat(formData.pricePerUnit),
-        description: formData.description || null,
-        harvest_date: formData.harvestDate || null,
-        location: formData.location || null,
-        state: formData.state || null,
-        image_url: imageUrl,
-        status: 'available',
+        quantity_kg: parseFloat(formData.quantity),
+        price_per_kg: parseFloat(formData.pricePerKg),
+        photo_url: photoUrl,
       });
 
       if (error) throw error;
@@ -121,12 +110,8 @@ export const AddCropModal: React.FC<AddCropModalProps> = ({ open, onOpenChange, 
         cropName: '',
         cropType: '',
         quantity: '',
-        unit: 'kg',
-        pricePerUnit: '',
+        pricePerKg: '',
         description: '',
-        harvestDate: '',
-        location: '',
-        state: '',
       });
       setImageFile(null);
       setImagePreview(null);
@@ -197,7 +182,7 @@ export const AddCropModal: React.FC<AddCropModalProps> = ({ open, onOpenChange, 
               />
             </div>
             <div>
-              <Label htmlFor="cropType">Crop Type *</Label>
+              <Label htmlFor="cropType">Crop Type</Label>
               <Select
                 value={formData.cropType}
                 onValueChange={(value) => setFormData({ ...formData, cropType: value })}
@@ -214,9 +199,9 @@ export const AddCropModal: React.FC<AddCropModalProps> = ({ open, onOpenChange, 
             </div>
           </div>
 
-          <div className="grid grid-cols-3 gap-4">
+          <div className="grid grid-cols-2 gap-4">
             <div>
-              <Label htmlFor="quantity">Quantity *</Label>
+              <Label htmlFor="quantity">Quantity (kg) *</Label>
               <Input
                 id="quantity"
                 type="number"
@@ -229,72 +214,18 @@ export const AddCropModal: React.FC<AddCropModalProps> = ({ open, onOpenChange, 
               />
             </div>
             <div>
-              <Label htmlFor="unit">Unit</Label>
-              <Select
-                value={formData.unit}
-                onValueChange={(value) => setFormData({ ...formData, unit: value })}
-              >
-                <SelectTrigger>
-                  <SelectValue />
-                </SelectTrigger>
-                <SelectContent>
-                  <SelectItem value="kg">Kg</SelectItem>
-                  <SelectItem value="quintal">Quintal</SelectItem>
-                  <SelectItem value="ton">Ton</SelectItem>
-                </SelectContent>
-              </Select>
-            </div>
-            <div>
-              <Label htmlFor="price">Price (₹) *</Label>
+              <Label htmlFor="price">Price per kg (₹) *</Label>
               <Input
                 id="price"
                 type="number"
                 min="0"
                 step="0.01"
-                value={formData.pricePerUnit}
-                onChange={(e) => setFormData({ ...formData, pricePerUnit: e.target.value })}
+                value={formData.pricePerKg}
+                onChange={(e) => setFormData({ ...formData, pricePerKg: e.target.value })}
                 placeholder="50"
                 required
               />
             </div>
-          </div>
-
-          <div className="grid grid-cols-2 gap-4">
-            <div>
-              <Label htmlFor="state">State</Label>
-              <Select
-                value={formData.state}
-                onValueChange={(value) => setFormData({ ...formData, state: value })}
-              >
-                <SelectTrigger>
-                  <SelectValue placeholder="Select state" />
-                </SelectTrigger>
-                <SelectContent>
-                  {indianStates.map((state) => (
-                    <SelectItem key={state} value={state}>{state}</SelectItem>
-                  ))}
-                </SelectContent>
-              </Select>
-            </div>
-            <div>
-              <Label htmlFor="location">City/Village</Label>
-              <Input
-                id="location"
-                value={formData.location}
-                onChange={(e) => setFormData({ ...formData, location: e.target.value })}
-                placeholder="e.g., Karnal"
-              />
-            </div>
-          </div>
-
-          <div>
-            <Label htmlFor="harvestDate">Expected Harvest Date</Label>
-            <Input
-              id="harvestDate"
-              type="date"
-              value={formData.harvestDate}
-              onChange={(e) => setFormData({ ...formData, harvestDate: e.target.value })}
-            />
           </div>
 
           <div>

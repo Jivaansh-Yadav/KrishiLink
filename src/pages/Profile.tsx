@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { Header } from '@/components/Header';
-import { Footer } from '@/components/Footer';
+import Header from '@/components/Header';
+import Footer from '@/components/Footer';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
@@ -20,7 +20,7 @@ import {
 import { useAuth } from '@/contexts/AuthContext';
 import { supabase } from '@/integrations/supabase/client';
 import { toast } from 'sonner';
-import { indianStates } from '@/data/indianStates';
+import { stateNames } from '@/data/indianStates';
 
 const Profile: React.FC = () => {
   const navigate = useNavigate();
@@ -31,14 +31,15 @@ const Profile: React.FC = () => {
   const [changingPassword, setChangingPassword] = useState(false);
   
   const [formData, setFormData] = useState({
-    fullName: '',
+    firstName: '',
+    lastName: '',
     email: '',
-    phone: '',
+    mobileNumber: '',
     state: '',
+    district: '',
   });
   
   const [passwordData, setPasswordData] = useState({
-    currentPassword: '',
     newPassword: '',
     confirmPassword: '',
   });
@@ -53,10 +54,12 @@ const Profile: React.FC = () => {
   useEffect(() => {
     if (profile) {
       setFormData({
-        fullName: profile.full_name || '',
+        firstName: profile.first_name || '',
+        lastName: profile.last_name || '',
         email: profile.email || '',
-        phone: profile.phone || '',
+        mobileNumber: profile.mobile_number || '',
         state: profile.state || '',
+        district: profile.district || '',
       });
     }
   }, [profile]);
@@ -82,7 +85,7 @@ const Profile: React.FC = () => {
 
       const { error: updateError } = await supabase
         .from('users')
-        .update({ avatar_url: urlData.publicUrl })
+        .update({ profile_photo: urlData.publicUrl })
         .eq('id', user.id);
 
       if (updateError) throw updateError;
@@ -105,9 +108,11 @@ const Profile: React.FC = () => {
       const { error } = await supabase
         .from('users')
         .update({
-          full_name: formData.fullName,
-          phone: formData.phone,
+          first_name: formData.firstName,
+          last_name: formData.lastName,
+          mobile_number: formData.mobileNumber,
           state: formData.state,
+          district: formData.district,
         })
         .eq('id', user.id);
 
@@ -143,7 +148,7 @@ const Profile: React.FC = () => {
       if (error) throw error;
 
       toast.success('Password changed successfully!');
-      setPasswordData({ currentPassword: '', newPassword: '', confirmPassword: '' });
+      setPasswordData({ newPassword: '', confirmPassword: '' });
     } catch (error: any) {
       console.error('Change password error:', error);
       toast.error(error.message || 'Failed to change password');
@@ -164,6 +169,11 @@ const Profile: React.FC = () => {
     }
   };
 
+  const getFullName = () => {
+    if (!profile) return '';
+    return `${profile.first_name} ${profile.last_name || ''}`.trim();
+  };
+
   if (authLoading) {
     return (
       <div className="min-h-screen flex items-center justify-center">
@@ -180,7 +190,7 @@ const Profile: React.FC = () => {
     <div className="min-h-screen flex flex-col bg-background">
       <Header />
       
-      <main className="flex-1 container mx-auto px-4 py-8 max-w-2xl">
+      <main className="flex-1 container mx-auto px-4 py-8 mt-16 max-w-2xl">
         <Button 
           variant="ghost" 
           className="mb-6"
@@ -203,9 +213,9 @@ const Profile: React.FC = () => {
               <div className="flex items-center gap-6">
                 <div className="relative">
                   <div className="h-24 w-24 rounded-full bg-primary/10 flex items-center justify-center overflow-hidden">
-                    {profile?.avatar_url ? (
+                    {profile?.profile_photo ? (
                       <img 
-                        src={profile.avatar_url} 
+                        src={profile.profile_photo} 
                         alt="Avatar" 
                         className="h-full w-full object-cover" 
                       />
@@ -252,14 +262,25 @@ const Profile: React.FC = () => {
               </CardTitle>
             </CardHeader>
             <CardContent className="space-y-4">
-              <div>
-                <Label htmlFor="fullName">Full Name</Label>
-                <Input
-                  id="fullName"
-                  value={formData.fullName}
-                  onChange={(e) => setFormData({ ...formData, fullName: e.target.value })}
-                  placeholder="Enter your full name"
-                />
+              <div className="grid grid-cols-2 gap-4">
+                <div>
+                  <Label htmlFor="firstName">First Name</Label>
+                  <Input
+                    id="firstName"
+                    value={formData.firstName}
+                    onChange={(e) => setFormData({ ...formData, firstName: e.target.value })}
+                    placeholder="First name"
+                  />
+                </div>
+                <div>
+                  <Label htmlFor="lastName">Last Name</Label>
+                  <Input
+                    id="lastName"
+                    value={formData.lastName}
+                    onChange={(e) => setFormData({ ...formData, lastName: e.target.value })}
+                    placeholder="Last name"
+                  />
+                </div>
               </div>
 
               <div>
@@ -280,36 +301,47 @@ const Profile: React.FC = () => {
               </div>
 
               <div>
-                <Label htmlFor="phone" className="flex items-center gap-2">
+                <Label htmlFor="mobileNumber" className="flex items-center gap-2">
                   <Phone className="h-4 w-4" />
-                  Phone Number
+                  Mobile Number
                 </Label>
                 <Input
-                  id="phone"
-                  value={formData.phone}
-                  onChange={(e) => setFormData({ ...formData, phone: e.target.value })}
+                  id="mobileNumber"
+                  value={formData.mobileNumber}
+                  onChange={(e) => setFormData({ ...formData, mobileNumber: e.target.value })}
                   placeholder="+91 XXXXXXXXXX"
                 />
               </div>
 
-              <div>
-                <Label htmlFor="state" className="flex items-center gap-2">
-                  <MapPin className="h-4 w-4" />
-                  State
-                </Label>
-                <Select
-                  value={formData.state}
-                  onValueChange={(value) => setFormData({ ...formData, state: value })}
-                >
-                  <SelectTrigger>
-                    <SelectValue placeholder="Select your state" />
-                  </SelectTrigger>
-                  <SelectContent>
-                    {indianStates.map((state) => (
-                      <SelectItem key={state} value={state}>{state}</SelectItem>
-                    ))}
-                  </SelectContent>
-                </Select>
+              <div className="grid grid-cols-2 gap-4">
+                <div>
+                  <Label htmlFor="state" className="flex items-center gap-2">
+                    <MapPin className="h-4 w-4" />
+                    State
+                  </Label>
+                  <Select
+                    value={formData.state}
+                    onValueChange={(value) => setFormData({ ...formData, state: value })}
+                  >
+                    <SelectTrigger>
+                      <SelectValue placeholder="Select your state" />
+                    </SelectTrigger>
+                    <SelectContent>
+                      {stateNames.map((state) => (
+                        <SelectItem key={state} value={state}>{state}</SelectItem>
+                      ))}
+                    </SelectContent>
+                  </Select>
+                </div>
+                <div>
+                  <Label htmlFor="district">District</Label>
+                  <Input
+                    id="district"
+                    value={formData.district}
+                    onChange={(e) => setFormData({ ...formData, district: e.target.value })}
+                    placeholder="Your district"
+                  />
+                </div>
               </div>
 
               <Button 
