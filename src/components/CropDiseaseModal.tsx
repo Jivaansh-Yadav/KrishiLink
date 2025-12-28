@@ -12,13 +12,12 @@ import { Textarea } from '@/components/ui/textarea';
 import { Card, CardContent } from '@/components/ui/card';
 import { Upload, Loader2, Bug, AlertTriangle, CheckCircle, Leaf } from 'lucide-react';
 import { toast } from 'sonner';
+import { supabase } from '@/integrations/supabase/client';
 
 interface CropDiseaseModalProps {
   open: boolean;
   onOpenChange: (open: boolean) => void;
 }
-
-const GEMINI_API_KEY = 'AIzaSyAaLMiiX484qSbgmI06i-W4UKW4TaM3LNU';
 
 interface DiagnosisResult {
   disease: string;
@@ -58,56 +57,21 @@ export const CropDiseaseModal: React.FC<CropDiseaseModalProps> = ({ open, onOpen
     setResult(null);
 
     try {
-      let prompt = `You are an expert agricultural scientist specializing in crop diseases. Analyze the following and provide a detailed diagnosis.
+      const imageBase64 = imagePreview ? imagePreview.split(',')[1] : undefined;
+      const mimeType = image?.type || 'image/jpeg';
 
-${symptoms ? `Symptoms described: ${symptoms}` : ''}
+      const { data, error } = await supabase.functions.invoke('ai', {
+        body: {
+          mode: 'disease',
+          symptoms: symptoms || undefined,
+          imageBase64,
+          mimeType,
+        },
+      });
 
-Please respond in JSON format with the following structure:
-{
-  "disease": "Name of the disease or condition",
-  "confidence": "High/Medium/Low",
-  "description": "Brief description of the disease",
-  "symptoms": ["symptom1", "symptom2", ...],
-  "treatment": ["treatment1", "treatment2", ...],
-  "prevention": ["prevention1", "prevention2", ...]
-}
+      if (error) throw error;
 
-If no disease is detected or the plant appears healthy, indicate that in the response.`;
-
-      const requestBody: any = {
-        contents: [{
-          parts: [{ text: prompt }]
-        }]
-      };
-
-      if (imagePreview) {
-        const base64Data = imagePreview.split(',')[1];
-        requestBody.contents[0].parts.unshift({
-          inline_data: {
-            mime_type: image?.type || 'image/jpeg',
-            data: base64Data
-          }
-        });
-        requestBody.contents[0].parts[1].text = `Analyze this crop/plant image for any diseases or health issues. ${prompt}`;
-      }
-
-      const response = await fetch(
-        `https://generativelanguage.googleapis.com/v1beta/models/gemini-2.0-flash:generateContent?key=${GEMINI_API_KEY}`,
-        {
-          method: 'POST',
-          headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify(requestBody),
-        }
-      );
-
-      if (!response.ok) {
-        throw new Error('Failed to analyze');
-      }
-
-      const data = await response.json();
-      const text = data.candidates?.[0]?.content?.parts?.[0]?.text || '';
-      
-      // Extract JSON from response
+      const text = (data as any)?.content || '';
       const jsonMatch = text.match(/\{[\s\S]*\}/);
       if (jsonMatch) {
         const diagnosis = JSON.parse(jsonMatch[0]);

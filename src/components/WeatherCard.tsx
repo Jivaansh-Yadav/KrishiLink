@@ -1,6 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Cloud, Sun, CloudRain, Wind, Droplets, Thermometer } from 'lucide-react';
+import { supabase } from '@/integrations/supabase/client';
 
 interface WeatherData {
   location: {
@@ -23,8 +24,6 @@ interface WeatherCardProps {
   location?: string;
 }
 
-const WEATHER_API_KEY = 'c2f92a4c124f4c0c902113230250501';
-
 export const WeatherCard: React.FC<WeatherCardProps> = ({ location = 'Delhi' }) => {
   const [weather, setWeather] = useState<WeatherData | null>(null);
   const [loading, setLoading] = useState(true);
@@ -34,20 +33,17 @@ export const WeatherCard: React.FC<WeatherCardProps> = ({ location = 'Delhi' }) 
     const fetchWeather = async () => {
       try {
         setLoading(true);
-        const response = await fetch(
-          `https://api.weatherapi.com/v1/current.json?key=${WEATHER_API_KEY}&q=${encodeURIComponent(location)}&aqi=no`
-        );
-        
-        if (!response.ok) {
-          throw new Error('Failed to fetch weather data');
-        }
-        
-        const data = await response.json();
-        setWeather(data);
+        const { data, error } = await supabase.functions.invoke('weather', {
+          body: { location },
+        });
+
+        if (error) throw error;
+
+        setWeather(data as WeatherData);
         setError(null);
       } catch (err) {
-        setError('Unable to load weather data');
         console.error('Weather fetch error:', err);
+        setError('Unable to load weather data');
       } finally {
         setLoading(false);
       }
@@ -59,11 +55,11 @@ export const WeatherCard: React.FC<WeatherCardProps> = ({ location = 'Delhi' }) 
   const getWeatherIcon = (condition: string) => {
     const lowerCondition = condition.toLowerCase();
     if (lowerCondition.includes('rain') || lowerCondition.includes('drizzle')) {
-      return <CloudRain className="h-12 w-12 text-blue-500" />;
+      return <CloudRain className="h-12 w-12 text-primary" />;
     } else if (lowerCondition.includes('cloud') || lowerCondition.includes('overcast')) {
-      return <Cloud className="h-12 w-12 text-gray-500" />;
+      return <Cloud className="h-12 w-12 text-muted-foreground" />;
     } else {
-      return <Sun className="h-12 w-12 text-yellow-500" />;
+      return <Sun className="h-12 w-12 text-primary" />;
     }
   };
 

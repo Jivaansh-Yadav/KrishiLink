@@ -105,12 +105,22 @@ const Profile: React.FC = () => {
 
     setSaving(true);
     try {
+      const emailChanged = !!formData.email && formData.email !== (profile?.email || '');
+
+      if (emailChanged) {
+        const { error: authEmailError } = await supabase.auth.updateUser({
+          email: formData.email,
+        });
+        if (authEmailError) throw authEmailError;
+      }
+
       const { error } = await supabase
         .from('users')
         .update({
           first_name: formData.firstName,
           last_name: formData.lastName,
           mobile_number: formData.mobileNumber,
+          email: formData.email,
           state: formData.state,
           district: formData.district,
         })
@@ -119,7 +129,11 @@ const Profile: React.FC = () => {
       if (error) throw error;
 
       await refreshProfile();
-      toast.success('Profile updated successfully!');
+      toast.success(
+        emailChanged
+          ? 'Profile updated. Please confirm your new email from your inbox.'
+          : 'Profile updated successfully!'
+      );
     } catch (error: any) {
       console.error('Save profile error:', error);
       toast.error(error.message || 'Failed to update profile');
@@ -216,7 +230,7 @@ const Profile: React.FC = () => {
                     {profile?.profile_photo ? (
                       <img 
                         src={profile.profile_photo} 
-                        alt="Avatar" 
+                        alt="Profile photo" 
                         className="h-full w-full object-cover" 
                       />
                     ) : (
@@ -284,6 +298,11 @@ const Profile: React.FC = () => {
               </div>
 
               <div>
+                <Label>Username</Label>
+                <Input value={profile?.username || ''} disabled className="bg-muted" />
+              </div>
+
+              <div>
                 <Label htmlFor="email" className="flex items-center gap-2">
                   <Mail className="h-4 w-4" />
                   Email
@@ -292,11 +311,10 @@ const Profile: React.FC = () => {
                   id="email"
                   type="email"
                   value={formData.email}
-                  disabled
-                  className="bg-muted"
+                  onChange={(e) => setFormData({ ...formData, email: e.target.value })}
                 />
                 <p className="text-xs text-muted-foreground mt-1">
-                  Email cannot be changed
+                  If you change email, you may need to confirm it from your inbox.
                 </p>
               </div>
 

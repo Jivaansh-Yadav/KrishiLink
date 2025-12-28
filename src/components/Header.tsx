@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import { useAuth } from '@/contexts/AuthContext';
 import Logo from './Logo';
@@ -14,6 +14,12 @@ const Header: React.FC = () => {
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
   const [showRegister, setShowRegister] = useState(false);
   const [showLogin, setShowLogin] = useState(false);
+
+  useEffect(() => {
+    const handler = () => setShowRegister(true);
+    window.addEventListener('krishilink:open-register', handler);
+    return () => window.removeEventListener('krishilink:open-register', handler);
+  }, []);
 
   const handleSignOut = async () => {
     await signOut();

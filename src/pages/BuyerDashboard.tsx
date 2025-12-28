@@ -164,6 +164,9 @@ const BuyerDashboard: React.FC = () => {
                   </div>
                   <div>
                     <h3 className="font-semibold">{getFullName()}</h3>
+                    {profile?.username && (
+                      <p className="text-xs text-muted-foreground">@{profile.username}</p>
+                    )}
                     <Badge variant="outline" className="mt-1">
                       <ShoppingCart className="h-3 w-3 mr-1" />
                       Buyer

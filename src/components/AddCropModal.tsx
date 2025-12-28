@@ -20,7 +20,8 @@ import { Upload, Loader2, Plus } from 'lucide-react';
 import { toast } from 'sonner';
 import { supabase } from '@/integrations/supabase/client';
 import { useAuth } from '@/contexts/AuthContext';
-import { cropTypes, stateNames } from '@/data/indianStates';
+import { cropTypes } from '@/data/indianStates';
+import { MSPListModal } from '@/components/MSPListModal';
 
 interface AddCropModalProps {
   open: boolean;
@@ -31,6 +32,7 @@ interface AddCropModalProps {
 export const AddCropModal: React.FC<AddCropModalProps> = ({ open, onOpenChange, onSuccess }) => {
   const { user } = useAuth();
   const [loading, setLoading] = useState(false);
+  const [showMSP, setShowMSP] = useState(false);
   const [imageFile, setImageFile] = useState<File | null>(null);
   const [imagePreview, setImagePreview] = useState<string | null>(null);
   
@@ -199,34 +201,45 @@ export const AddCropModal: React.FC<AddCropModalProps> = ({ open, onOpenChange, 
             </div>
           </div>
 
-          <div className="grid grid-cols-2 gap-4">
-            <div>
-              <Label htmlFor="quantity">Quantity (kg) *</Label>
-              <Input
-                id="quantity"
-                type="number"
-                min="0"
-                step="0.01"
-                value={formData.quantity}
-                onChange={(e) => setFormData({ ...formData, quantity: e.target.value })}
-                placeholder="100"
-                required
-              />
+            <div className="grid grid-cols-2 gap-4">
+              <div>
+                <Label htmlFor="quantity">Quantity (kg) *</Label>
+                <Input
+                  id="quantity"
+                  type="number"
+                  min="0"
+                  step="0.01"
+                  value={formData.quantity}
+                  onChange={(e) => setFormData({ ...formData, quantity: e.target.value })}
+                  placeholder="100"
+                  required
+                />
+              </div>
+              <div>
+                <div className="flex items-center justify-between">
+                  <Label htmlFor="price">Price per kg (₹) *</Label>
+                  <Button
+                    type="button"
+                    variant="link"
+                    size="sm"
+                    className="h-auto p-0"
+                    onClick={() => setShowMSP(true)}
+                  >
+                    View MSP list
+                  </Button>
+                </div>
+                <Input
+                  id="price"
+                  type="number"
+                  min="0"
+                  step="0.01"
+                  value={formData.pricePerKg}
+                  onChange={(e) => setFormData({ ...formData, pricePerKg: e.target.value })}
+                  placeholder="50"
+                  required
+                />
+              </div>
             </div>
-            <div>
-              <Label htmlFor="price">Price per kg (₹) *</Label>
-              <Input
-                id="price"
-                type="number"
-                min="0"
-                step="0.01"
-                value={formData.pricePerKg}
-                onChange={(e) => setFormData({ ...formData, pricePerKg: e.target.value })}
-                placeholder="50"
-                required
-              />
-            </div>
-          </div>
 
           <div>
             <Label htmlFor="description">Description</Label>
@@ -250,6 +263,7 @@ export const AddCropModal: React.FC<AddCropModalProps> = ({ open, onOpenChange, 
             )}
           </Button>
         </form>
+        <MSPListModal open={showMSP} onOpenChange={setShowMSP} />
       </DialogContent>
     </Dialog>
   );

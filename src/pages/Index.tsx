@@ -67,7 +67,11 @@ const Index: React.FC = () => {
             </p>
             
             <div className="flex flex-wrap justify-center gap-4 animate-scale-in animation-delay-300">
-              <Button size="lg" className="btn-hero">
+              <Button
+                size="lg"
+                className="btn-hero"
+                onClick={() => window.dispatchEvent(new Event('krishilink:open-register'))}
+              >
                 Start Selling Today <ArrowRight className="w-5 h-5 ml-2" />
               </Button>
             </div>
@@ -162,7 +166,11 @@ const Index: React.FC = () => {
           <p className="text-primary-foreground/80 mb-8 max-w-2xl mx-auto">
             Join thousands of farmers who are already earning more with KrishiLink. Sign up today — it's completely free!
           </p>
-          <Button size="lg" className="btn-hero">
+          <Button
+            size="lg"
+            className="btn-hero"
+            onClick={() => window.dispatchEvent(new Event('krishilink:open-register'))}
+          >
             Get Started Free <ArrowRight className="w-5 h-5 ml-2" />
           </Button>
         </div>
