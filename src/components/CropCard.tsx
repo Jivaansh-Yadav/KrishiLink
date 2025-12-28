@@ -29,22 +29,40 @@ interface CropCardProps {
 }
 
 export const CropCard: React.FC<CropCardProps> = ({ crop, showFarmerContact = false, onContact }) => {
-  const defaultImage = 'https://images.unsplash.com/photo-1574323347407-f5e1ad6d020b?w=400&h=300&fit=crop';
+  const initials = (crop.crop_name || "Crop")
+    .split(/\s+/)
+    .filter(Boolean)
+    .slice(0, 2)
+    .map((w) => w[0]?.toUpperCase())
+    .join("");
+
+  const statusClass =
+    crop.status === "available"
+      ? "bg-primary text-primary-foreground"
+      : crop.status === "sold"
+        ? "bg-destructive text-destructive-foreground"
+        : "bg-secondary text-secondary-foreground";
 
   return (
     <Card className="overflow-hidden hover:shadow-lg transition-shadow">
       <div className="relative h-40">
-        <img
-          src={crop.image_url || defaultImage}
-          alt={crop.crop_name}
-          className="w-full h-full object-cover"
-        />
-        <Badge 
-          className={`absolute top-2 right-2 ${
-            crop.status === 'available' ? 'bg-green-500' : 
-            crop.status === 'sold' ? 'bg-red-500' : 'bg-yellow-500'
-          }`}
-        >
+        {crop.image_url ? (
+          <img
+            src={crop.image_url}
+            alt={`${crop.crop_name} crop image`}
+            className="w-full h-full object-cover"
+            loading="lazy"
+          />
+        ) : (
+          <div className="w-full h-full bg-muted flex items-center justify-center">
+            <div className="text-center">
+              <div className="font-heading text-3xl font-bold text-foreground">{initials || "CR"}</div>
+              <div className="text-xs text-muted-foreground mt-1">{crop.crop_name}</div>
+            </div>
+          </div>
+        )}
+
+        <Badge className={`absolute top-2 right-2 ${statusClass}`}>
           {crop.status}
         </Badge>
       </div>

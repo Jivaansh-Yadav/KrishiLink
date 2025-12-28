@@ -48,6 +48,9 @@ const App = () => (
             <Routes>
               <Route path="/" element={<Index />} />
               <Route path="/dashboard" element={<DashboardRouter />} />
+              <Route path="/farmer-dashboard" element={<FarmerDashboard />} />
+              <Route path="/buyer-dashboard" element={<BuyerDashboard />} />
+              <Route path="/admin-dashboard" element={<AdminDashboard />} />
               <Route path="/profile" element={<Profile />} />
               <Route path="*" element={<NotFound />} />
             </Routes>
