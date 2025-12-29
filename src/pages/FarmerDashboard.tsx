@@ -8,12 +8,14 @@ import { CropDiseaseModal } from '@/components/CropDiseaseModal';
 import { AIChatModal } from '@/components/AIChatModal';
 import { AddCropModal } from '@/components/AddCropModal';
 import { CropCard } from '@/components/CropCard';
+import { FindBuyersModal } from '@/components/FindBuyersModal';
+import { ExpertAdvisoryCard } from '@/components/ExpertAdvisoryCard';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
 import { 
   User, MapPin, Phone, Mail, Plus, IndianRupee, Bug, 
-  MessageSquare, Users, Wheat, Loader2, Edit
+  MessageSquare, Users, Wheat, Loader2, Edit, Bot
 } from 'lucide-react';
 import { useAuth } from '@/contexts/AuthContext';
 import { supabase } from '@/integrations/supabase/client';
@@ -45,6 +47,7 @@ const FarmerDashboard: React.FC = () => {
   const [showDisease, setShowDisease] = useState(false);
   const [showAIChat, setShowAIChat] = useState(false);
   const [showAddCrop, setShowAddCrop] = useState(false);
+  const [showFindBuyers, setShowFindBuyers] = useState(false);
 
   const getFullName = () => {
     if (!profile) return '';
@@ -77,11 +80,11 @@ const FarmerDashboard: React.FC = () => {
 
       if (error) throw error;
       
-      // Map DB fields to component fields
+      // Map DB fields to component fields - use actual crop_type from DB
       const mappedCrops = (data || []).map(c => ({
         id: c.id,
         crop_name: c.crop_name,
-        crop_type: 'Cereals',
+        crop_type: c.crop_type || 'Crop',
         quantity: c.quantity_kg,
         unit: 'kg',
         price_per_unit: c.price_per_kg,
@@ -105,7 +108,7 @@ const FarmerDashboard: React.FC = () => {
     );
   }
 
-  if (!user || profile?.role !== 'farmer') {
+  if (!user) {
     return null;
   }
 
@@ -137,7 +140,7 @@ const FarmerDashboard: React.FC = () => {
                     )}
                   </div>
                   <div>
-                    <h3 className="font-semibold">{getFullName()}</h3>
+                    <h3 className="font-semibold">{getFullName() || 'Farmer'}</h3>
                     {profile?.username && (
                       <p className="text-xs text-muted-foreground">@{profile.username}</p>
                     )}
@@ -217,13 +220,16 @@ const FarmerDashboard: React.FC = () => {
                 <Button 
                   variant="outline" 
                   className="h-auto py-4 flex-col gap-2"
-                  onClick={() => navigate('/buyer-dashboard')}
+                  onClick={() => setShowFindBuyers(true)}
                 >
                   <Users className="h-5 w-5 text-green-500" />
                   <span className="text-xs">Find Buyers</span>
                 </Button>
               </CardContent>
             </Card>
+
+            {/* Expert Advisory Card */}
+            <ExpertAdvisoryCard />
           </div>
 
           {/* Right Column - My Crops */}
@@ -271,11 +277,21 @@ const FarmerDashboard: React.FC = () => {
 
       <Footer />
 
+      {/* Floating AI Assistant Button */}
+      <button
+        onClick={() => setShowAIChat(true)}
+        className="fixed bottom-6 right-6 w-14 h-14 rounded-full bg-primary text-primary-foreground shadow-lg hover:shadow-xl hover:scale-105 transition-all flex items-center justify-center z-40"
+        aria-label="Open AI Assistant"
+      >
+        <Bot className="h-6 w-6" />
+      </button>
+
       {/* Modals */}
       <MSPListModal open={showMSP} onOpenChange={setShowMSP} />
       <CropDiseaseModal open={showDisease} onOpenChange={setShowDisease} />
       <AIChatModal open={showAIChat} onOpenChange={setShowAIChat} />
       <AddCropModal open={showAddCrop} onOpenChange={setShowAddCrop} onSuccess={fetchCrops} />
+      <FindBuyersModal open={showFindBuyers} onOpenChange={setShowFindBuyers} />
     </div>
   );
 };

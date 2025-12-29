@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { Heart, Mail, Phone, MessageCircle, MapPin, Youtube, Instagram, Facebook, Twitter } from 'lucide-react';
+import { Heart, Mail, Phone, MessageCircle, MapPin, Youtube, Instagram, Facebook, Twitter, Sprout } from 'lucide-react';
 import Logo from './Logo';
 import SupportModal from './SupportModal';
 import { Button } from '@/components/ui/button';
@@ -60,8 +60,8 @@ const Footer: React.FC = () => {
             {/* Brand */}
             <div className="space-y-4">
               <div className="flex items-center gap-2">
-                <div className="w-10 h-10 rounded-lg bg-primary-foreground flex items-center justify-center">
-                  <span className="text-primary font-bold text-xl">K</span>
+                <div className="flex items-center justify-center w-10 h-10 rounded-lg bg-primary-foreground">
+                  <Sprout className="w-6 h-6 text-primary" />
                 </div>
                 <span className="font-heading font-bold text-xl">KrishiLink</span>
               </div>

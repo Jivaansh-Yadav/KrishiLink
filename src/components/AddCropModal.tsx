@@ -92,10 +92,11 @@ export const AddCropModal: React.FC<AddCropModalProps> = ({ open, onOpenChange, 
         }
       }
 
-      // Insert crop record
+      // Insert crop record with crop_type
       const { error } = await supabase.from('crops').insert({
         user_id: user.id,
         crop_name: formData.cropName,
+        crop_type: formData.cropType || 'Other',
         quantity_kg: parseFloat(formData.quantity),
         price_per_kg: parseFloat(formData.pricePerKg),
         photo_url: photoUrl,
