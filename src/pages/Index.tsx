@@ -5,8 +5,9 @@ import { Button } from '@/components/ui/button';
 import { Card, CardContent } from '@/components/ui/card';
 import { Input } from '@/components/ui/input';
 import { Textarea } from '@/components/ui/textarea';
+import { Badge } from '@/components/ui/badge';
 import { 
-  Sprout, Cloud, ShoppingCart, Users, TrendingUp, Shield, 
+  Sprout, Cloud, ShoppingCart, Bug, IndianRupee,
   ArrowRight, Mail, Phone, MapPin, Clock 
 } from 'lucide-react';
 import heroFarm from '@/assets/hero-farm.jpg';
@@ -21,17 +22,15 @@ const Index: React.FC = () => {
 
   const handleContactSubmit = (e: React.FormEvent) => {
     e.preventDefault();
-    // Handle form submission
     console.log('Contact form submitted:', contactForm);
   };
 
   const features = [
-    { icon: Sprout, title: 'Crop Management', desc: 'Track your crops from planting to harvest with AI-powered insights and recommendations.' },
-    { icon: Cloud, title: 'Weather Forecasts', desc: 'Get accurate local weather predictions to plan your farming activities effectively.' },
-    { icon: ShoppingCart, title: 'Direct Marketplace', desc: 'Sell directly to buyers at fair prices, eliminating middlemen and increasing profits.' },
-    { icon: Users, title: 'Expert Advisory', desc: 'Connect with agricultural experts for personalized guidance and best practices.' },
-    { icon: TrendingUp, title: 'Price Analytics', desc: 'Real-time market prices and trends to help you make informed selling decisions.' },
-    { icon: Shield, title: 'Secure Payments', desc: 'Fast and secure payment processing directly to your bank account.' },
+    { icon: Sprout, title: 'Crop Management', desc: 'Track your crops from planting to harvest with smart tools to manage your entire farming operation.' },
+    { icon: Cloud, title: 'Weather Forecast', desc: 'Get accurate local weather predictions to plan your farming activities and protect your harvest.' },
+    { icon: ShoppingCart, title: 'Direct Marketplace', desc: 'Sell directly to buyers at fair prices, eliminating middlemen and increasing your profits.' },
+    { icon: Bug, title: 'Crop Health Analysis', desc: 'AI-powered disease detection and expert recommendations to keep your crops healthy and thriving.' },
+    { icon: IndianRupee, title: 'MSP Reference Guide', desc: 'Access updated Minimum Support Prices to make informed decisions and get fair value for your produce.' },
   ];
 
   return (
@@ -52,7 +51,7 @@ const Index: React.FC = () => {
           <div className="text-center max-w-4xl mx-auto">
             <div className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-primary-foreground/10 border border-primary-foreground/20 mb-6 animate-fade-in">
               <span className="w-2 h-2 rounded-full bg-yellow-400" />
-              <span className="text-sm text-primary-foreground">Empowering 50,000+ Farmers Across India</span>
+              <span className="text-sm text-primary-foreground">Bridging Agriculture & Technology for a Stronger India</span>
             </div>
             
             <h1 className="font-heading text-4xl md:text-6xl lg:text-7xl font-bold text-primary-foreground mb-2 animate-slide-up">
@@ -146,11 +145,11 @@ const Index: React.FC = () => {
               <div className="p-6 rounded-2xl bg-background shadow-card">
                 <div className="flex items-center gap-4 mb-3">
                   <div className="w-10 h-10 rounded-full bg-blue-100 flex items-center justify-center">
-                    <Users className="w-5 h-5 text-blue-600" />
+                    <ShoppingCart className="w-5 h-5 text-blue-600" />
                   </div>
-                  <h4 className="font-heading font-semibold">Empathy</h4>
+                  <h4 className="font-heading font-semibold">Fair Trade</h4>
                 </div>
-                <p className="text-sm text-muted-foreground">Understanding farmer challenges</p>
+                <p className="text-sm text-muted-foreground">Direct market access for better prices</p>
               </div>
             </div>
           </div>
@@ -228,14 +227,17 @@ const Index: React.FC = () => {
               
               <div>
                 <h3 className="font-heading font-semibold text-xl mb-4">Working Hours</h3>
-                <div className="flex items-start gap-4 p-4 rounded-xl bg-muted/50">
-                  <div className="w-10 h-10 rounded-full bg-primary/10 flex items-center justify-center">
-                    <Clock className="w-5 h-5 text-primary" />
-                  </div>
-                  <div>
-                    <p className="text-sm text-muted-foreground mb-1">Our support team is available 24/7</p>
-                    <p className="font-medium">Monday - Saturday: 6:00 AM - 10:00 PM</p>
-                    <p className="font-medium">Sunday: 8:00 AM - 6:00 PM</p>
+                <div className="p-4 rounded-xl bg-muted/50">
+                  <div className="flex items-start gap-4">
+                    <div className="w-10 h-10 rounded-full bg-primary/10 flex items-center justify-center flex-shrink-0">
+                      <Clock className="w-5 h-5 text-primary" />
+                    </div>
+                    <div className="flex-1">
+                      <Badge className="bg-green-500 text-white mb-2">Support Available 24/7</Badge>
+                      <p className="text-sm text-muted-foreground mb-1">Office Hours:</p>
+                      <p className="font-medium text-sm">Monday - Saturday: 6:00 AM - 10:00 PM</p>
+                      <p className="font-medium text-sm">Sunday: 8:00 AM - 6:00 PM</p>
+                    </div>
                   </div>
                 </div>
               </div>

@@ -28,8 +28,7 @@ const Header: React.FC = () => {
 
   const navLinks = [
     { href: '#about', label: 'About' },
-    { href: '#benefits', label: 'Benefits' },
-    { href: '#how-it-works', label: 'How it Works' },
+    { href: '#features', label: 'Features' },
     { href: '#contact', label: 'Contact' },
   ];
 
@@ -47,7 +46,7 @@ const Header: React.FC = () => {
                 <a
                   key={link.href}
                   href={link.href}
-                  className="text-sm font-medium text-foreground/80 hover:text-primary transition-colors"
+                  className="nav-link-animated text-sm font-medium text-foreground/80 hover:text-primary transition-colors"
                 >
                   {link.label}
                 </a>
