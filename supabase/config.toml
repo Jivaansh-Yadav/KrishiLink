@@ -1,0 +1,21 @@
+project_id = "jamftlvwvvkixefimiya"
+
+[api]
+enabled = true
+port = 54321
+schemas = ["public", "graphql_public"]
+extra_search_path = ["public", "extensions"]
+max_rows = 1000
+
+[db]
+port = 54322
+
+[studio]
+enabled = true
+port = 54323
+
+[functions.weather]
+verify_jwt = false
+
+[functions.ai]
+verify_jwt = false

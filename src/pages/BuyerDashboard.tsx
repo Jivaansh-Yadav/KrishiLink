@@ -66,8 +66,13 @@ const BuyerDashboard: React.FC = () => {
     if (!authLoading && !user) {
       navigate('/');
       toast.error('Please login to access dashboard');
+      return;
     }
-  }, [user, authLoading, navigate]);
+
+    if (!authLoading && user && profile && profile.role !== 'buyer') {
+      navigate('/dashboard', { replace: true });
+    }
+  }, [user, profile, authLoading, navigate]);
 
   useEffect(() => {
     fetchCrops();
@@ -133,8 +138,25 @@ const BuyerDashboard: React.FC = () => {
     );
   }
 
-  if (!user || profile?.role !== 'buyer') {
+  // Profile row is fetched async (can be briefly null after signup/login)
+  if (user && !profile) {
+    return (
+      <div className="min-h-screen flex items-center justify-center">
+        <Loader2 className="h-8 w-8 animate-spin text-primary" />
+      </div>
+    );
+  }
+
+  if (!user) {
     return null;
+  }
+
+  if (profile.role !== 'buyer') {
+    return (
+      <div className="min-h-screen flex items-center justify-center">
+        <Loader2 className="h-8 w-8 animate-spin text-primary" />
+      </div>
+    );
   }
 
   return (
