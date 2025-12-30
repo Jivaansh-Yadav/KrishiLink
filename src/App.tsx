@@ -16,16 +16,21 @@ const queryClient = new QueryClient();
 
 const DashboardRouter = () => {
   const { user, profile, loading } = useAuth();
-  
+
   if (loading) {
     return <div className="min-h-screen flex items-center justify-center">Loading...</div>;
   }
-  
+
   if (!user) {
     return <Navigate to="/" replace />;
   }
-  
-  switch (profile?.role) {
+
+  // Profile can be temporarily null right after signup/login (async fetch)
+  if (!profile) {
+    return <div className="min-h-screen flex items-center justify-center">Loading your dashboard...</div>;
+  }
+
+  switch (profile.role) {
     case 'farmer':
       return <FarmerDashboard />;
     case 'buyer':
