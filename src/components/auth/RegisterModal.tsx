@@ -19,7 +19,7 @@ import {
   SelectTrigger,
   SelectValue,
 } from '@/components/ui/select';
-import { Eye, EyeOff, Loader2 } from 'lucide-react';
+import { Eye, EyeOff, Loader2, Mail } from 'lucide-react';
 
 interface RegisterModalProps {
   open: boolean;
@@ -32,8 +32,7 @@ const RegisterModal: React.FC<RegisterModalProps> = ({ open, onOpenChange, onSwi
   const { toast } = useToast();
   const [loading, setLoading] = useState(false);
   const [showPassword, setShowPassword] = useState(false);
-  const [step, setStep] = useState<'form' | 'otp'>('form');
-  const [otp, setOtp] = useState('');
+  const [emailSent, setEmailSent] = useState(false);
   
   const [formData, setFormData] = useState({
     firstName: '',
@@ -49,8 +48,8 @@ const RegisterModal: React.FC<RegisterModalProps> = ({ open, onOpenChange, onSwi
   });
 
   const validateMobile = (mobile: string) => /^\d{10}$/.test(mobile);
-  const validateEmail = (email: string) => email.includes('@');
-  const validatePassword = (password: string) => /^(?=.*[a-zA-Z])(?=.*\d).+$/.test(password);
+  const validateEmail = (email: string) => /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email);
+  const validatePassword = (password: string) => password.length >= 6 && /^(?=.*[a-zA-Z])(?=.*\d).+$/.test(password);
 
   const generateUsername = (role: string) => {
     const randomNum = Math.floor(1000 + Math.random() * 9000);
@@ -71,7 +70,7 @@ const RegisterModal: React.FC<RegisterModalProps> = ({ open, onOpenChange, onSwi
     }
 
     if (!validatePassword(formData.password)) {
-      toast({ title: 'Weak Password', description: 'Password must contain at least one letter and one number', variant: 'destructive' });
+      toast({ title: 'Weak Password', description: 'Password must be at least 6 characters with at least one letter and one number', variant: 'destructive' });
       return;
     }
 
@@ -83,9 +82,15 @@ const RegisterModal: React.FC<RegisterModalProps> = ({ open, onOpenChange, onSwi
     setLoading(true);
 
     try {
-      const { error } = await supabase.auth.signInWithOtp({
+      const username = generateUsername(formData.role);
+      const redirectUrl = `${window.location.origin}/dashboard`;
+
+      // Use signUp with email/password and confirmation link
+      const { data, error } = await supabase.auth.signUp({
         email: formData.email,
+        password: formData.password,
         options: {
+          emailRedirectTo: redirectUrl,
           data: {
             first_name: formData.firstName,
             last_name: formData.lastName,
@@ -95,48 +100,33 @@ const RegisterModal: React.FC<RegisterModalProps> = ({ open, onOpenChange, onSwi
             village: formData.village,
             postal_code: formData.postalCode,
             role: formData.role,
-            username: generateUsername(formData.role),
-            password: formData.password,
+            username: username,
           },
         },
       });
 
-      if (error) throw error;
+      if (error) {
+        if (error.message.includes('already registered')) {
+          toast({
+            title: 'Email Already Registered',
+            description: 'This email is already registered. Please login or use a different email.',
+            variant: 'destructive',
+          });
+        } else {
+          throw error;
+        }
+        return;
+      }
 
-      toast({
-        title: 'OTP Sent',
-        description: 'Please check your email for the verification code',
-      });
-
-      setStep('otp');
-    } catch (error: any) {
-      toast({
-        title: 'Registration Failed',
-        description: error.message || 'Something went wrong',
-        variant: 'destructive',
-      });
-    } finally {
-      setLoading(false);
-    }
-  };
-
-  const handleVerifyOTP = async (e: React.FormEvent) => {
-    e.preventDefault();
-    setLoading(true);
-
-    try {
-      const { data, error } = await supabase.auth.verifyOtp({
-        email: formData.email,
-        token: otp,
-        type: 'email',
-      });
-
-      if (error) throw error;
-
-      if (data.user) {
-        const username = generateUsername(formData.role);
-        
-        // Create user profile
+      // If email confirmation is required
+      if (data.user && !data.session) {
+        setEmailSent(true);
+        toast({
+          title: 'Confirmation Email Sent',
+          description: 'Please check your email and click the confirmation link to complete registration.',
+        });
+      } else if (data.user && data.session) {
+        // If email confirmation is disabled, create profile and navigate
         const { error: profileError } = await supabase.from('users').insert({
           id: data.user.id,
           first_name: formData.firstName,
@@ -161,13 +151,13 @@ const RegisterModal: React.FC<RegisterModalProps> = ({ open, onOpenChange, onSwi
         });
 
         onOpenChange(false);
-        setStep('form');
         navigate('/dashboard');
       }
     } catch (error: any) {
+      console.error('Registration error:', error);
       toast({
-        title: 'Verification Failed',
-        description: error.message || 'Invalid OTP',
+        title: 'Registration Failed',
+        description: error.message || 'Something went wrong',
         variant: 'destructive',
       });
     } finally {
@@ -176,8 +166,7 @@ const RegisterModal: React.FC<RegisterModalProps> = ({ open, onOpenChange, onSwi
   };
 
   const handleClose = () => {
-    setStep('form');
-    setOtp('');
+    setEmailSent(false);
     onOpenChange(false);
   };
 
@@ -186,11 +175,26 @@ const RegisterModal: React.FC<RegisterModalProps> = ({ open, onOpenChange, onSwi
       <DialogContent className="sm:max-w-[500px] max-h-[90vh] overflow-y-auto">
         <DialogHeader>
           <DialogTitle className="font-heading text-2xl text-center">
-            {step === 'form' ? 'Create Account' : 'Verify Email'}
+            {emailSent ? 'Check Your Email' : 'Create Account'}
           </DialogTitle>
         </DialogHeader>
 
-        {step === 'form' ? (
+        {emailSent ? (
+          <div className="text-center space-y-4 py-6">
+            <div className="mx-auto w-16 h-16 rounded-full bg-primary/10 flex items-center justify-center">
+              <Mail className="h-8 w-8 text-primary" />
+            </div>
+            <p className="text-muted-foreground">
+              We've sent a confirmation link to <span className="font-medium text-foreground">{formData.email}</span>
+            </p>
+            <p className="text-sm text-muted-foreground">
+              Click the link in the email to complete your registration and access your dashboard.
+            </p>
+            <Button variant="outline" onClick={() => setEmailSent(false)}>
+              ← Back to form
+            </Button>
+          </div>
+        ) : (
           <form onSubmit={handleSubmit} className="space-y-4">
             <div className="grid grid-cols-2 gap-4">
               <div className="space-y-2">
@@ -318,7 +322,7 @@ const RegisterModal: React.FC<RegisterModalProps> = ({ open, onOpenChange, onSwi
                   type={showPassword ? 'text' : 'password'}
                   value={formData.password}
                   onChange={(e) => setFormData(prev => ({ ...prev, password: e.target.value }))}
-                  placeholder="Must contain letter and number"
+                  placeholder="Min 6 chars, letter + number"
                   required
                 />
                 <button
@@ -342,37 +346,6 @@ const RegisterModal: React.FC<RegisterModalProps> = ({ open, onOpenChange, onSwi
                 Login
               </button>
             </p>
-          </form>
-        ) : (
-          <form onSubmit={handleVerifyOTP} className="space-y-4">
-            <p className="text-center text-muted-foreground">
-              Enter the OTP sent to <span className="font-medium text-foreground">{formData.email}</span>
-            </p>
-
-            <div className="space-y-2">
-              <Label htmlFor="otp">Verification Code</Label>
-              <Input
-                id="otp"
-                value={otp}
-                onChange={(e) => setOtp(e.target.value)}
-                placeholder="Enter 6-digit code"
-                className="text-center text-lg tracking-widest"
-                required
-              />
-            </div>
-
-            <Button type="submit" className="w-full" disabled={loading}>
-              {loading && <Loader2 className="w-4 h-4 mr-2 animate-spin" />}
-              Verify & Complete Registration
-            </Button>
-
-            <button
-              type="button"
-              className="w-full text-sm text-muted-foreground hover:text-foreground"
-              onClick={() => setStep('form')}
-            >
-              ← Back to form
-            </button>
           </form>
         )}
       </DialogContent>
