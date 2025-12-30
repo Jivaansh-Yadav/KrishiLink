@@ -70,6 +70,7 @@ export interface Database {
           id: string
           user_id: string
           crop_name: string
+          crop_type: string | null
           quantity_kg: number
           price_per_kg: number
           photo_url: string | null
@@ -80,6 +81,7 @@ export interface Database {
           id?: string
           user_id: string
           crop_name: string
+          crop_type?: string | null
           quantity_kg: number
           price_per_kg: number
           photo_url?: string | null
@@ -90,6 +92,7 @@ export interface Database {
           id?: string
           user_id?: string
           crop_name?: string
+          crop_type?: string | null
           quantity_kg?: number
           price_per_kg?: number
           photo_url?: string | null
@@ -101,23 +104,47 @@ export interface Database {
         Row: {
           id: string
           user_id: string | null
+          username: string | null
+          name: string | null
+          email: string | null
+          mobile_number: string | null
+          role: string | null
+          is_registered: boolean
           subject: string
           message: string
+          status: string
           created_at: string
+          updated_at: string
         }
         Insert: {
           id?: string
           user_id?: string | null
+          username?: string | null
+          name?: string | null
+          email?: string | null
+          mobile_number?: string | null
+          role?: string | null
+          is_registered?: boolean
           subject: string
           message: string
+          status?: string
           created_at?: string
+          updated_at?: string
         }
         Update: {
           id?: string
           user_id?: string | null
+          username?: string | null
+          name?: string | null
+          email?: string | null
+          mobile_number?: string | null
+          role?: string | null
+          is_registered?: boolean
           subject?: string
           message?: string
+          status?: string
           created_at?: string
+          updated_at?: string
         }
       }
     }

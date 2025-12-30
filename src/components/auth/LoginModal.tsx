@@ -41,25 +41,82 @@ const LoginModal: React.FC<LoginModalProps> = ({ open, onOpenChange, onSwitchToR
 
       // If identifier is not an email, try to find the user by username or mobile
       if (!formData.identifier.includes('@')) {
-        const { data: userData } = await supabase
+        const { data: userData, error: lookupError } = await supabase
           .from('users')
           .select('email')
           .or(`username.eq.${formData.identifier},mobile_number.eq.+91${formData.identifier}`)
           .maybeSingle();
 
+        if (lookupError) {
+          console.error('User lookup error:', lookupError);
+        }
+
         if (userData) {
           email = userData.email;
         } else {
-          throw new Error('User not found');
+          toast({
+            title: 'User Not Found',
+            description: 'No account found with this username or mobile number. Please check and try again.',
+            variant: 'destructive',
+          });
+          setLoading(false);
+          return;
         }
       }
 
-      const { error } = await supabase.auth.signInWithPassword({
+      const { data, error } = await supabase.auth.signInWithPassword({
         email,
         password: formData.password,
       });
 
-      if (error) throw error;
+      if (error) {
+        if (error.message.includes('Invalid login credentials')) {
+          toast({
+            title: 'Invalid Credentials',
+            description: 'The email/username and password combination is incorrect. Please try again.',
+            variant: 'destructive',
+          });
+        } else if (error.message.includes('Email not confirmed')) {
+          toast({
+            title: 'Email Not Confirmed',
+            description: 'Please check your email and click the confirmation link to verify your account.',
+            variant: 'destructive',
+          });
+        } else {
+          throw error;
+        }
+        return;
+      }
+
+      // Check if user profile exists, if not create it from auth metadata
+      if (data.user) {
+        const { data: existingProfile } = await supabase
+          .from('users')
+          .select('id')
+          .eq('id', data.user.id)
+          .maybeSingle();
+
+        if (!existingProfile && data.user.user_metadata) {
+          const meta = data.user.user_metadata;
+          const { error: profileError } = await supabase.from('users').insert({
+            id: data.user.id,
+            first_name: meta.first_name || '',
+            last_name: meta.last_name || null,
+            mobile_number: meta.mobile_number || null,
+            email: data.user.email || '',
+            state: meta.state || null,
+            district: meta.district || null,
+            village: meta.village || null,
+            postal_code: meta.postal_code || null,
+            role: meta.role || 'farmer',
+            username: meta.username || `user${Math.floor(1000 + Math.random() * 9000)}`,
+          });
+
+          if (profileError) {
+            console.error('Profile creation error on login:', profileError);
+          }
+        }
+      }
 
       toast({
         title: 'Welcome back!',
@@ -69,6 +126,7 @@ const LoginModal: React.FC<LoginModalProps> = ({ open, onOpenChange, onSwitchToR
       onOpenChange(false);
       navigate('/dashboard');
     } catch (error: any) {
+      console.error('Login error:', error);
       toast({
         title: 'Login Failed',
         description: error.message || 'Invalid credentials',

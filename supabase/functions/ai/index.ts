@@ -13,10 +13,18 @@ type AiRequest =
   | { mode: "disease"; symptoms?: string; imageBase64?: string; mimeType?: string };
 
 const CHAT_SYSTEM_PROMPT = `You are KrishiBot, an AI assistant for KrishiLink - an agricultural marketplace platform in India.
-Help farmers and buyers with practical, actionable advice. Keep answers concise and clear.`;
+Help farmers and buyers with practical, actionable advice. Keep answers concise and clear.
+You can answer questions about:
+- Crop prices and MSP (Minimum Support Price)
+- Farming techniques and best practices
+- Weather and seasonal advice
+- Crop diseases and treatments
+- Government schemes for farmers
+- Market trends and buyer connections`;
 
+// Use Gemini 2.5 Flash Lite model
 function geminiEndpoint(apiKey: string) {
-  return `https://generativelanguage.googleapis.com/v1beta/models/gemini-2.0-flash:generateContent?key=${apiKey}`;
+  return `https://generativelanguage.googleapis.com/v1beta/models/gemini-2.0-flash-lite:generateContent?key=${apiKey}`;
 }
 
 serve(async (req) => {
@@ -25,6 +33,7 @@ serve(async (req) => {
   try {
     const apiKey = Deno.env.get("GEMINI_API_KEY");
     if (!apiKey) {
+      console.error("GEMINI_API_KEY is not configured");
       return new Response(JSON.stringify({ error: "GEMINI_API_KEY is not configured" }), {
         status: 500,
         headers: { ...corsHeaders, "Content-Type": "application/json" },
@@ -32,6 +41,7 @@ serve(async (req) => {
     }
 
     const body = (await req.json()) as AiRequest;
+    console.log("AI request mode:", body.mode);
 
     let requestBody: any;
 
@@ -40,18 +50,33 @@ serve(async (req) => {
       requestBody = { contents: [{ parts: [{ text: prompt }] }] };
     } else if (body.mode === "chat") {
       const messages = body.messages || [];
-      requestBody = {
-        contents: [
-          { role: "user", parts: [{ text: CHAT_SYSTEM_PROMPT }] },
-          ...messages.map((m) => ({
-            role: m.role === "assistant" ? "model" : "user",
-            parts: [{ text: m.content }],
-          })),
-        ],
-      };
+      // Build conversation with system prompt as first user message
+      const contents = [
+        { role: "user", parts: [{ text: CHAT_SYSTEM_PROMPT + "\n\nPlease acknowledge that you understand your role." }] },
+        { role: "model", parts: [{ text: "Namaste! I am KrishiBot, your agricultural assistant. I'm here to help you with farming advice, crop information, MSP rates, disease management, and government schemes. How can I help you today?" }] },
+        ...messages.map((m) => ({
+          role: m.role === "assistant" ? "model" : "user",
+          parts: [{ text: m.content }],
+        })),
+      ];
+      requestBody = { contents };
     } else if (body.mode === "disease") {
       const symptoms = body.symptoms?.trim();
-      const prompt = `You are an expert agricultural scientist specializing in crop diseases.\n\n${symptoms ? `Symptoms described: ${symptoms}\n\n` : ""}Provide a detailed diagnosis.\n\nRespond in JSON with:\n{\n  \"disease\": \"...\",\n  \"confidence\": \"High/Medium/Low\",\n  \"description\": \"...\",\n  \"symptoms\": [\"...\"],\n  \"treatment\": [\"...\"],\n  \"prevention\": [\"...\"]\n}`;
+      const prompt = `You are an expert agricultural scientist specializing in crop diseases in India.
+
+${symptoms ? `The farmer describes these symptoms: ${symptoms}` : "Analyze the provided image of a crop/plant."}
+
+Provide a detailed diagnosis. If you cannot identify a specific disease, provide general advice.
+
+You MUST respond with valid JSON in this exact format (no markdown, no code blocks, just pure JSON):
+{
+  "disease": "Name of the disease or 'Healthy' if no disease detected",
+  "confidence": "High" or "Medium" or "Low",
+  "description": "Brief description of the condition",
+  "symptoms": ["symptom 1", "symptom 2"],
+  "treatment": ["treatment step 1", "treatment step 2"],
+  "prevention": ["prevention tip 1", "prevention tip 2"]
+}`;
 
       const parts: any[] = [];
       if (body.imageBase64) {
@@ -62,7 +87,7 @@ serve(async (req) => {
           },
         });
       }
-      parts.push({ text: body.imageBase64 ? `Analyze this crop/plant image. ${prompt}` : prompt });
+      parts.push({ text: prompt });
 
       requestBody = { contents: [{ parts }] };
     } else {
@@ -72,6 +97,7 @@ serve(async (req) => {
       });
     }
 
+    console.log("Calling Gemini API...");
     const resp = await fetch(geminiEndpoint(apiKey), {
       method: "POST",
       headers: { "Content-Type": "application/json" },
@@ -79,9 +105,15 @@ serve(async (req) => {
     });
 
     const raw = await resp.text();
+    console.log("Gemini response status:", resp.status);
+
     if (!resp.ok) {
-      console.error("gemini error:", resp.status, raw);
-      return new Response(JSON.stringify({ error: "AI provider error", status: resp.status, details: raw }), {
+      console.error("Gemini API error:", resp.status, raw);
+      return new Response(JSON.stringify({ 
+        error: "AI provider error", 
+        status: resp.status, 
+        details: raw.substring(0, 500) 
+      }), {
         status: resp.status,
         headers: { ...corsHeaders, "Content-Type": "application/json" },
       });
@@ -89,6 +121,7 @@ serve(async (req) => {
 
     const data = JSON.parse(raw);
     const content = data?.candidates?.[0]?.content?.parts?.[0]?.text ?? "";
+    console.log("AI response received, length:", content.length);
 
     return new Response(JSON.stringify({ content }), {
       status: 200,
