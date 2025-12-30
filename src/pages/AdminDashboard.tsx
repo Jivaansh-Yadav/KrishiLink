@@ -48,8 +48,13 @@ const AdminDashboard: React.FC = () => {
     if (!authLoading && !user) {
       navigate('/');
       toast.error('Please login to access dashboard');
+      return;
     }
-  }, [user, authLoading, navigate]);
+
+    if (!authLoading && user && profile && profile.role !== 'admin') {
+      navigate('/dashboard', { replace: true });
+    }
+  }, [user, profile, authLoading, navigate]);
 
   useEffect(() => {
     if (user && profile?.role === 'admin') {
@@ -129,8 +134,24 @@ const AdminDashboard: React.FC = () => {
     );
   }
 
-  if (!user || profile?.role !== 'admin') {
+  if (user && !profile) {
+    return (
+      <div className="min-h-screen flex items-center justify-center">
+        <Loader2 className="h-8 w-8 animate-spin text-primary" />
+      </div>
+    );
+  }
+
+  if (!user) {
     return null;
+  }
+
+  if (profile.role !== 'admin') {
+    return (
+      <div className="min-h-screen flex items-center justify-center">
+        <Loader2 className="h-8 w-8 animate-spin text-primary" />
+      </div>
+    );
   }
 
   const renderUserTable = (

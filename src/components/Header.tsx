@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react';
-import { Link, useNavigate } from 'react-router-dom';
+import { useLocation, useNavigate } from 'react-router-dom';
 import { useAuth } from '@/contexts/AuthContext';
 import Logo from './Logo';
 import LanguageSelector from './LanguageSelector';
@@ -11,9 +11,12 @@ import LoginModal from './auth/LoginModal';
 const Header: React.FC = () => {
   const { user, profile, signOut } = useAuth();
   const navigate = useNavigate();
+  const location = useLocation();
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
   const [showRegister, setShowRegister] = useState(false);
   const [showLogin, setShowLogin] = useState(false);
+
+  const showMarketingNav = !user && location.pathname === '/';
 
   useEffect(() => {
     const handler = () => setShowRegister(true);
@@ -41,17 +44,19 @@ const Header: React.FC = () => {
             <Logo />
 
             {/* Desktop Navigation */}
-            <nav className="hidden lg:flex items-center gap-6">
-              {navLinks.map((link) => (
-                <a
-                  key={link.href}
-                  href={link.href}
-                  className="nav-link-animated text-sm font-medium text-foreground/80 hover:text-primary transition-colors"
-                >
-                  {link.label}
-                </a>
-              ))}
-            </nav>
+            {showMarketingNav && (
+              <nav className="hidden lg:flex items-center gap-6">
+                {navLinks.map((link) => (
+                  <a
+                    key={link.href}
+                    href={link.href}
+                    className="nav-link-animated text-sm font-medium text-foreground/80 hover:text-primary transition-colors"
+                  >
+                    {link.label}
+                  </a>
+                ))}
+              </nav>
+            )}
 
             {/* Desktop Actions */}
             <div className="hidden md:flex items-center gap-3">
@@ -93,18 +98,20 @@ const Header: React.FC = () => {
         {mobileMenuOpen && (
           <div className="lg:hidden border-t border-border bg-background">
             <div className="container mx-auto px-4 py-4 space-y-4">
-              <nav className="flex flex-col gap-2">
-                {navLinks.map((link) => (
-                  <a
-                    key={link.href}
-                    href={link.href}
-                    className="py-2 text-foreground/80 hover:text-primary transition-colors"
-                    onClick={() => setMobileMenuOpen(false)}
-                  >
-                    {link.label}
-                  </a>
-                ))}
-              </nav>
+              {showMarketingNav && (
+                <nav className="flex flex-col gap-2">
+                  {navLinks.map((link) => (
+                    <a
+                      key={link.href}
+                      href={link.href}
+                      className="py-2 text-foreground/80 hover:text-primary transition-colors"
+                      onClick={() => setMobileMenuOpen(false)}
+                    >
+                      {link.label}
+                    </a>
+                  ))}
+                </nav>
+              )}
               <div className="pt-4 border-t border-border space-y-2">
                 <LanguageSelector />
                 {user ? (
