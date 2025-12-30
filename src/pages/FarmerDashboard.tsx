@@ -187,6 +187,13 @@ const FarmerDashboard: React.FC = () => {
             {/* Weather Card */}
             <WeatherCard location={location} />
 
+            
+
+            
+          </div>
+
+          
+          <div className="lg:col-span-2">
             {/* Quick Actions */}
             <Card>
               <CardHeader className="pb-3">
@@ -228,12 +235,9 @@ const FarmerDashboard: React.FC = () => {
               </CardContent>
             </Card>
 
-            {/* Expert Advisory Card */}
-            <ExpertAdvisoryCard />
-          </div>
+            <br></br>
 
-          {/* Right Column - My Crops */}
-          <div className="lg:col-span-2">
+            {/* Right Column - My Crops */}
             <Card>
               <CardHeader className="flex flex-row items-center justify-between">
                 <CardTitle className="text-xl flex items-center gap-2">
@@ -271,6 +275,9 @@ const FarmerDashboard: React.FC = () => {
                 )}
               </CardContent>
             </Card>
+            <br></br>
+            {/* Expert Advisory Card */}
+            <ExpertAdvisoryCard />
           </div>
         </div>
       </main>

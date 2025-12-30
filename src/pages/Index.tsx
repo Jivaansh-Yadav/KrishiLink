@@ -121,8 +121,8 @@ const Index: React.FC = () => {
               
               <div className="grid grid-cols-2 gap-4">
                 <div className="p-4 rounded-xl bg-primary/5 border border-primary/10">
-                  <p className="font-heading text-2xl font-bold text-primary">15+</p>
-                  <p className="text-sm text-muted-foreground">Indian States</p>
+                  <p className="font-heading text-2xl font-bold text-primary">10+</p>
+                  <p className="text-sm text-muted-foreground">Indian Languages</p>
                 </div>
                 <div className="p-4 rounded-xl bg-primary/5 border border-primary/10">
                   <p className="font-heading text-2xl font-bold text-primary">24/7</p>
@@ -243,7 +243,8 @@ const Index: React.FC = () => {
               </div>
             </div>
             
-            {/* Contact Form */}
+            {/* Support Form */}
+            <section id="support" className="py-20 bg-muted/30">
             <div className="p-8 rounded-2xl bg-muted/30 border border-border">
               <h3 className="font-heading font-semibold text-xl mb-6">Send Us a Message</h3>
               <form onSubmit={handleContactSubmit} className="space-y-4">
@@ -271,7 +272,7 @@ const Index: React.FC = () => {
                 </div>
                 <div>
                   <Textarea 
-                    placeholder="Your Message" 
+                    placeholder="Your Message for us!" 
                     rows={4}
                     value={contactForm.message}
                     onChange={(e) => setContactForm({ ...contactForm, message: e.target.value })}
@@ -282,6 +283,7 @@ const Index: React.FC = () => {
                 </Button>
               </form>
             </div>
+            </section>
           </div>
         </div>
       </section>

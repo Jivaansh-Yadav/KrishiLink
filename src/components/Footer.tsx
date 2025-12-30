@@ -48,12 +48,7 @@ const Footer: React.FC = () => {
   return (
     <>
       <footer className="bg-primary text-primary-foreground">
-        {/* DateTime Bar */}
-        <div className="bg-primary-dark py-2">
-          <div className="container mx-auto px-4 text-center">
-            <p className="text-sm text-primary-foreground/80 font-mono">{formatDate(currentTime)}</p>
-          </div>
-        </div>
+        
 
         <div className="container mx-auto px-4 py-12">
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8">
@@ -95,10 +90,10 @@ const Footer: React.FC = () => {
             <div className="space-y-4">
               <h3 className="font-heading font-semibold text-lg">Quick Links</h3>
               <nav className="space-y-2">
-                <a href="#about" className="block text-sm text-primary-foreground/80 hover:text-primary-foreground transition-colors">About</a>
-                <a href="#benefits" className="block text-sm text-primary-foreground/80 hover:text-primary-foreground transition-colors">Benefits</a>
-                <a href="#how-it-works" className="block text-sm text-primary-foreground/80 hover:text-primary-foreground transition-colors">How it Works</a>
-                <Button variant="ghost" className="p-0 h-auto text-sm text-primary-foreground/80 hover:text-primary-foreground" onClick={() => setShowSupport(true)}>Support</Button>
+                <a href="/#features" className="block text-sm text-primary-foreground/80 hover:text-primary-foreground transition-colors">Features</a>
+                <a href="/#about" className="block text-sm text-primary-foreground/80 hover:text-primary-foreground transition-colors">About</a>
+                <a href="/#contact" className="block text-sm text-primary-foreground/80 hover:text-primary-foreground transition-colors">Contact</a>
+                <a href="/#support" className="block text-sm text-primary-foreground/80 hover:text-primary-foreground transition-colors">Support</a>
               </nav>
             </div>
 
@@ -130,6 +125,12 @@ const Footer: React.FC = () => {
             <p className="text-xs text-primary-foreground/50 mt-2">
               © {new Date().getFullYear()} KrishiLink. All rights reserved.
             </p>
+          </div>
+        </div>
+        {/* DateTime Bar */}
+        <div className="bg-primary-dark py-2">
+          <div className="container mx-auto px-4 text-center">
+            <p className="text-sm text-primary-foreground/80 font-mono">{formatDate(currentTime)}</p>
           </div>
         </div>
       </footer>

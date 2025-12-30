@@ -141,10 +141,10 @@ export const CropDiseaseModal: React.FC<CropDiseaseModalProps> = ({ open, onOpen
             </div>
 
             <div>
-              <Label htmlFor="symptoms">Describe Symptoms (Optional)</Label>
+              <Label htmlFor="symptoms">Describe Crop Name and Symptoms (Optional)</Label>
               <Textarea
                 id="symptoms"
-                placeholder="E.g., Yellow spots on leaves, wilting, brown edges..."
+                placeholder="E.g., Wheat crop leaves having yellow spots, wilting, brown edges..."
                 value={symptoms}
                 onChange={(e) => setSymptoms(e.target.value)}
                 className="mt-2"
@@ -165,7 +165,7 @@ export const CropDiseaseModal: React.FC<CropDiseaseModalProps> = ({ open, onOpen
               ) : (
                 <>
                   <Leaf className="h-4 w-4 mr-2" />
-                  Analyze Crop Health
+                  Analyze Crop Disease
                 </>
               )}
             </Button>
