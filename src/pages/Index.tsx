@@ -7,22 +7,65 @@ import { Input } from '@/components/ui/input';
 import { Textarea } from '@/components/ui/textarea';
 import { Badge } from '@/components/ui/badge';
 import { 
-  Sprout, Cloud, ShoppingCart, Bug, IndianRupee,
-  ArrowRight, Mail, Phone, MapPin, Clock 
+  Sprout, Cloud, ShoppingCart, Bug, IndianRupee, HelpCircle,
+  ArrowRight, Mail, Phone, MapPin, Clock, Loader2 
 } from 'lucide-react';
+import { supabase } from '@/integrations/supabase/client';
+import { useToast } from '@/hooks/use-toast';
 import heroFarm from '@/assets/hero-farm.jpg';
 
 const Index: React.FC = () => {
+  const { toast } = useToast();
   const [contactForm, setContactForm] = useState({
     name: '',
     phone: '',
     email: '',
+    subject: 'General Inquiry',
     message: ''
   });
+  const [submitting, setSubmitting] = useState(false);
 
-  const handleContactSubmit = (e: React.FormEvent) => {
+  const handleContactSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    console.log('Contact form submitted:', contactForm);
+    
+    if (!contactForm.name || !contactForm.email || !contactForm.message) {
+      toast({
+        title: 'Missing Information',
+        description: 'Please fill in all required fields.',
+        variant: 'destructive',
+      });
+      return;
+    }
+    
+    setSubmitting(true);
+    try {
+      const { error } = await supabase.from('support').insert({
+        name: contactForm.name,
+        email: contactForm.email,
+        mobile_number: contactForm.phone || null,
+        subject: contactForm.subject,
+        message: contactForm.message,
+        is_registered: false,
+      });
+      
+      if (error) throw error;
+      
+      toast({
+        title: 'Message Sent!',
+        description: 'Thank you for contacting us. We will get back to you soon.',
+      });
+      
+      setContactForm({ name: '', phone: '', email: '', subject: 'General Inquiry', message: '' });
+    } catch (error: any) {
+      console.error('Contact form error:', error);
+      toast({
+        title: 'Error',
+        description: error.message || 'Failed to send message. Please try again.',
+        variant: 'destructive',
+      });
+    } finally {
+      setSubmitting(false);
+    }
   };
 
   const features = [
@@ -31,6 +74,7 @@ const Index: React.FC = () => {
     { icon: ShoppingCart, title: 'Direct Marketplace', desc: 'Sell directly to buyers at fair prices, eliminating middlemen and increasing your profits.' },
     { icon: Bug, title: 'Crop Health Analysis', desc: 'AI-powered disease detection and expert recommendations to keep your crops healthy and thriving.' },
     { icon: IndianRupee, title: 'MSP Reference Guide', desc: 'Access updated Minimum Support Prices to make informed decisions and get fair value for your produce.' },
+    { icon: HelpCircle, title: 'Expert Advisory', desc: 'Access toll-free helplines and government resources for agricultural guidance, PM Kisan support, and farming assistance.' },
   ];
 
   return (
@@ -278,8 +322,15 @@ const Index: React.FC = () => {
                     onChange={(e) => setContactForm({ ...contactForm, message: e.target.value })}
                   />
                 </div>
-                <Button type="submit" className="w-full" size="lg">
-                  Send Message
+                <Button type="submit" className="w-full" size="lg" disabled={submitting}>
+                  {submitting ? (
+                    <>
+                      <Loader2 className="w-4 h-4 mr-2 animate-spin" />
+                      Sending...
+                    </>
+                  ) : (
+                    'Send Message'
+                  )}
                 </Button>
               </form>
             </div>

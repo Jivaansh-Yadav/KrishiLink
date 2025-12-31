@@ -22,9 +22,11 @@ You can answer questions about:
 - Government schemes for farmers
 - Market trends and buyer connections`;
 
-// Use Gemini 2.5 Flash Lite model
+// Use Gemini 2.5 Flash Lite model - correct model name per docs
+const GEMINI_MODEL = "gemini-2.5-flash";
+
 function geminiEndpoint(apiKey: string) {
-  return `https://generativelanguage.googleapis.com/v1beta/models/gemini-2.0-flash-lite:generateContent?key=${apiKey}`;
+  return `https://generativelanguage.googleapis.com/v1beta/models/${GEMINI_MODEL}:generateContent?key=${apiKey}`;
 }
 
 serve(async (req) => {
@@ -47,7 +49,11 @@ serve(async (req) => {
 
     if (body.mode === "translate") {
       const prompt = `Translate the following text to ${body.targetLanguage}. Only return the translated text, nothing else.\n\n${body.text}`;
-      requestBody = { contents: [{ parts: [{ text: prompt }] }] };
+      requestBody = { 
+        contents: [{ 
+          parts: [{ text: prompt }] 
+        }] 
+      };
     } else if (body.mode === "chat") {
       const messages = body.messages || [];
       // Build conversation with system prompt as first user message
@@ -97,7 +103,7 @@ You MUST respond with valid JSON in this exact format (no markdown, no code bloc
       });
     }
 
-    console.log("Calling Gemini API...");
+    console.log("Calling Gemini API with model:", GEMINI_MODEL);
     const resp = await fetch(geminiEndpoint(apiKey), {
       method: "POST",
       headers: { "Content-Type": "application/json" },

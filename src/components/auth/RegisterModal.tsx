@@ -83,7 +83,8 @@ const RegisterModal: React.FC<RegisterModalProps> = ({ open, onOpenChange, onSwi
 
     try {
       const username = generateUsername(formData.role);
-      const redirectUrl = `${window.location.origin}/dashboard`;
+      // Use auth/callback route for email confirmation redirect
+      const redirectUrl = `${window.location.origin}/auth/callback`;
 
       // Use signUp with email/password and confirmation link
       const { data, error } = await supabase.auth.signUp({
