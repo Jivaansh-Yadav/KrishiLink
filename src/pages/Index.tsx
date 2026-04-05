@@ -159,9 +159,6 @@ const Index: React.FC = () => {
               <p className="text-muted-foreground mb-6">
                 KrishiLink was born from a simple idea: farmers deserve fair prices for their produce. We're building technology that bridges the gap between farmers and markets, eliminating middlemen and ensuring every farmer gets what they truly deserve.
               </p>
-              <p className="text-muted-foreground mb-8">
-                Founded in 2024, we've already helped farmers across India increase their income. Our platform combines traditional agricultural wisdom with modern technology to create a sustainable ecosystem for all stakeholders.
-              </p>
               
               <div className="grid grid-cols-2 gap-4">
                 <div className="p-4 rounded-xl bg-primary/5 border border-primary/10">
