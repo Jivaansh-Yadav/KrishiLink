@@ -10,7 +10,8 @@ type ChatMsg = { role: "user" | "assistant"; content: string };
 type AiRequest =
   | { mode: "translate"; text: string; targetLanguage: string }
   | { mode: "chat"; messages: ChatMsg[] }
-  | { mode: "disease"; symptoms?: string; imageBase64?: string; mimeType?: string };
+  | { mode: "disease"; symptoms?: string; imageBase64?: string; mimeType?: string }
+  | { mode: "weather-summary"; weather: any; location?: string };
 
 const CHAT_SYSTEM_PROMPT = `You are KrishiBot, an AI assistant for KrishiLink - an agricultural marketplace platform in India.
 Help farmers and buyers with practical, actionable advice. Keep answers concise and clear.
@@ -96,6 +97,20 @@ You MUST respond with valid JSON in this exact format (no markdown, no code bloc
       parts.push({ text: prompt });
 
       requestBody = { contents: [{ parts }] };
+    } else if (body.mode === "weather-summary") {
+      const prompt = `You are an agricultural weather advisor for Indian farmers.
+Given this weather data for ${body.location || "the farm"}: ${JSON.stringify(body.weather).substring(0, 2000)}
+
+Return ONLY valid JSON (no markdown) in this exact shape:
+{
+  "severity": "green" | "yellow" | "red",
+  "headline": "max 8 words plain-English status",
+  "summary": "1 short sentence (max 22 words) about today's weather impact on farming",
+  "do": ["short do tip 1", "short do tip 2"],
+  "dont": ["short don't tip 1", "short don't tip 2"]
+}
+Severity rules: green = safe normal conditions; yellow = caution (heat, light rain, wind, humidity issues); red = danger (heavy rain, storm, extreme heat/cold, frost). Keep every tip under 8 words.`;
+      requestBody = { contents: [{ parts: [{ text: prompt }] }] };
     } else {
       return new Response(JSON.stringify({ error: "Invalid mode" }), {
         status: 400,
