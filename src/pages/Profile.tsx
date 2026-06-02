@@ -368,6 +368,28 @@ const Profile: React.FC = () => {
                 </div>
               </div>
 
+              <div className="grid grid-cols-2 gap-4">
+                <div>
+                  <Label htmlFor="village">Village / Town</Label>
+                  <Input
+                    id="village"
+                    value={formData.village}
+                    onChange={(e) => setFormData({ ...formData, village: e.target.value })}
+                    placeholder="Your village or town"
+                  />
+                </div>
+                <div>
+                  <Label htmlFor="postalCode">Postal Code</Label>
+                  <Input
+                    id="postalCode"
+                    value={formData.postalCode}
+                    onChange={(e) => setFormData({ ...formData, postalCode: e.target.value })}
+                    placeholder="6-digit PIN"
+                    maxLength={6}
+                  />
+                </div>
+              </div>
+
               <Button 
                 onClick={handleSaveProfile} 
                 disabled={saving}
