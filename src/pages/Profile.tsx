@@ -37,6 +37,8 @@ const Profile: React.FC = () => {
     mobileNumber: '',
     state: '',
     district: '',
+    village: '',
+    postalCode: '',
   });
   
   const [passwordData, setPasswordData] = useState({
@@ -60,6 +62,8 @@ const Profile: React.FC = () => {
         mobileNumber: profile.mobile_number || '',
         state: profile.state || '',
         district: profile.district || '',
+        village: (profile as any).village || '',
+        postalCode: (profile as any).postal_code || '',
       });
     }
   }, [profile]);
@@ -123,6 +127,8 @@ const Profile: React.FC = () => {
           email: formData.email,
           state: formData.state,
           district: formData.district,
+          village: formData.village || null,
+          postal_code: formData.postalCode || null,
         })
         .eq('id', user.id);
 
