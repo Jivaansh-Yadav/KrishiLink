@@ -54,8 +54,8 @@ const BuyerDashboard: React.FC = () => {
   
   // Filters
   const [searchTerm, setSearchTerm] = useState('');
-  const [cropTypeFilter, setCropTypeFilter] = useState('');
-  const [stateFilter, setStateFilter] = useState('');
+  const [cropTypeFilter, setCropTypeFilter] = useState('all');
+  const [stateFilter, setStateFilter] = useState('all');
 
   const getFullName = () => {
     if (!profile) return '';
@@ -125,8 +125,8 @@ const BuyerDashboard: React.FC = () => {
     const matchesSearch = !searchTerm || 
       crop.crop_name.toLowerCase().includes(searchTerm.toLowerCase()) ||
       crop.description?.toLowerCase().includes(searchTerm.toLowerCase());
-    const matchesType = !cropTypeFilter || crop.crop_type === cropTypeFilter;
-    const matchesState = !stateFilter || crop.state === stateFilter;
+    const matchesType = cropTypeFilter === 'all' || crop.crop_type === cropTypeFilter;
+    const matchesState = stateFilter === 'all' || crop.state === stateFilter;
     return matchesSearch && matchesType && matchesState;
   });
 
@@ -249,7 +249,7 @@ const BuyerDashboard: React.FC = () => {
                       <SelectValue placeholder="All types" />
                     </SelectTrigger>
                     <SelectContent>
-                      <SelectItem value="">All types</SelectItem>
+                      <SelectItem value="all">All types</SelectItem>
                       {cropTypes.map((type) => (
                         <SelectItem key={type} value={type}>{type}</SelectItem>
                       ))}
@@ -264,7 +264,7 @@ const BuyerDashboard: React.FC = () => {
                       <SelectValue placeholder="All states" />
                     </SelectTrigger>
                     <SelectContent>
-                      <SelectItem value="">All states</SelectItem>
+                      <SelectItem value="all">All states</SelectItem>
                       {stateNames.map((state) => (
                         <SelectItem key={state} value={state}>{state}</SelectItem>
                       ))}
@@ -272,12 +272,12 @@ const BuyerDashboard: React.FC = () => {
                   </Select>
                 </div>
 
-                {(cropTypeFilter || stateFilter) && (
+                {(cropTypeFilter !== 'all' || stateFilter !== 'all') && (
                   <Button 
                     variant="ghost" 
                     size="sm" 
                     className="w-full"
-                    onClick={() => { setCropTypeFilter(''); setStateFilter(''); }}
+                    onClick={() => { setCropTypeFilter('all'); setStateFilter('all'); }}
                   >
                     Clear Filters
                   </Button>
@@ -316,7 +316,7 @@ const BuyerDashboard: React.FC = () => {
                     <Wheat className="h-12 w-12 mx-auto text-muted-foreground mb-4" />
                     <h3 className="font-semibold mb-2">No crops found</h3>
                     <p className="text-muted-foreground">
-                      {searchTerm || cropTypeFilter || stateFilter 
+                      {searchTerm || cropTypeFilter !== 'all' || stateFilter !== 'all'
                         ? 'Try adjusting your filters' 
                         : 'No crops are currently available'}
                     </p>
