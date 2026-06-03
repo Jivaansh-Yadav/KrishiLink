@@ -146,7 +146,14 @@ export interface Database {
       }
     }
     Views: {
-      [_ in never]: never
+      login_identifiers: {
+        Row: {
+          email: string | null
+          mobile_number: string | null
+          username: string | null
+        }
+        Relationships: []
+      }
     }
     Functions: {
       lookup_login_email: {

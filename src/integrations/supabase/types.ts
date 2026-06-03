@@ -165,7 +165,14 @@ export type Database = {
       }
     }
     Views: {
-      [_ in never]: never
+      login_identifiers: {
+        Row: {
+          email: string | null
+          mobile_number: string | null
+          username: string | null
+        }
+        Relationships: []
+      }
     }
     Functions: {
       has_role: {

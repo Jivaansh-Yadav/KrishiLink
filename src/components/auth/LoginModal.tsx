@@ -31,6 +31,42 @@ const normalizeLoginIdentifier = (identifier: string) => {
     : trimmedIdentifier;
 };
 
+const normalizeComparableText = (value?: string | null) =>
+  normalizeLoginIdentifier(value || '').toLowerCase();
+
+const getDigits = (value?: string | null) => (value || '').replace(/\D/g, '');
+
+const mobileNumbersMatch = (input: string, storedMobile?: string | null) => {
+  const inputDigits = getDigits(input);
+  const storedDigits = getDigits(storedMobile);
+
+  if (!inputDigits || !storedDigits) return false;
+
+  return (
+    inputDigits === storedDigits ||
+    storedDigits === `91${inputDigits}` ||
+    inputDigits === `91${storedDigits}` ||
+    (inputDigits.length >= 10 && storedDigits.endsWith(inputDigits.slice(-10))) ||
+    (storedDigits.length >= 10 && inputDigits.endsWith(storedDigits.slice(-10)))
+  );
+};
+
+type LoginIdentifierRow = {
+  email: string | null;
+  username: string | null;
+  mobile_number: string | null;
+};
+
+const findMatchingLoginEmail = (rows: LoginIdentifierRow[], identifier: string) => {
+  const comparableIdentifier = normalizeComparableText(identifier);
+
+  return rows.find((row) =>
+    normalizeComparableText(row.email) === comparableIdentifier ||
+    normalizeComparableText(row.username) === comparableIdentifier ||
+    mobileNumbersMatch(identifier, row.mobile_number)
+  )?.email;
+};
+
 const LoginModal: React.FC<LoginModalProps> = ({ open, onOpenChange, onSwitchToRegister }) => {
   const navigate = useNavigate();
   const { toast } = useToast();
@@ -52,20 +88,22 @@ const LoginModal: React.FC<LoginModalProps> = ({ open, onOpenChange, onSwitchToR
       const identifier = normalizeLoginIdentifier(formData.identifier);
       let email = identifier;
 
-      // Supabase password login requires an email. For username/mobile logins,
-      // resolve the email through a limited RPC that works before authentication.
+      // Supabase password login still needs an email. For username/mobile,
+      // fetch the available login rows and match the typed value the same way
+      // the app treats an email: input first, then compare against row values.
       if (!isEmailIdentifier(identifier)) {
-        const { data: lookupRows, error: lookupError } = await supabase
-          .rpc('lookup_login_email', { identifier });
+        const { data: loginRows, error: lookupError } = await supabase
+          .from('login_identifiers')
+          .select('email, username, mobile_number');
 
         if (lookupError) {
           console.error('User lookup error:', lookupError);
           throw lookupError;
         }
 
-        const lookupEmail = lookupRows?.[0]?.email;
-        if (lookupEmail) {
-          email = lookupEmail;
+        const matchedEmail = findMatchingLoginEmail(loginRows || [], identifier);
+        if (matchedEmail) {
+          email = matchedEmail;
         } else {
           toast({
             title: 'User Not Found',
