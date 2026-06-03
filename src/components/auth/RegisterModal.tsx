@@ -38,6 +38,7 @@ const RegisterModal: React.FC<RegisterModalProps> = ({ open, onOpenChange, onSwi
     firstName: '',
     lastName: '',
     mobileNumber: '',
+    whatsappNumber: '',
     email: '',
     state: '',
     district: '',
@@ -96,6 +97,7 @@ const RegisterModal: React.FC<RegisterModalProps> = ({ open, onOpenChange, onSwi
             first_name: formData.firstName,
             last_name: formData.lastName,
             mobile_number: '+91' + formData.mobileNumber,
+            whatsapp_number: formData.whatsappNumber ? '+91' + formData.whatsappNumber : null,
             state: formData.state,
             district: formData.district,
             village: formData.village,
@@ -133,6 +135,7 @@ const RegisterModal: React.FC<RegisterModalProps> = ({ open, onOpenChange, onSwi
           first_name: formData.firstName,
           last_name: formData.lastName || null,
           mobile_number: '+91' + formData.mobileNumber,
+          whatsapp_number: formData.whatsappNumber ? '+91' + formData.whatsappNumber : null,
           email: formData.email,
           state: formData.state,
           district: formData.district,
@@ -231,6 +234,23 @@ const RegisterModal: React.FC<RegisterModalProps> = ({ open, onOpenChange, onSwi
                   className="rounded-l-none"
                   placeholder="10-digit number"
                   required
+                />
+              </div>
+            </div>
+
+            <div className="space-y-2">
+              <Label htmlFor="whatsapp">WhatsApp Number <span className="text-muted-foreground text-xs">(optional)</span></Label>
+              <div className="flex">
+                <span className="inline-flex items-center px-3 text-sm bg-muted border border-r-0 border-input rounded-l-md">
+                  +91
+                </span>
+                <Input
+                  id="whatsapp"
+                  type="tel"
+                  value={formData.whatsappNumber}
+                  onChange={(e) => setFormData(prev => ({ ...prev, whatsappNumber: e.target.value.replace(/\D/g, '').slice(0, 10) }))}
+                  className="rounded-l-none"
+                  placeholder="WhatsApp 10-digit (if different)"
                 />
               </div>
             </div>
