@@ -2,7 +2,8 @@ import React from 'react';
 import { Card, CardContent, CardFooter } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
-import { MapPin, Calendar, Phone, Mail, Wheat, IndianRupee } from 'lucide-react';
+import { MapPin, Calendar, Phone, Mail, Wheat, IndianRupee, Info } from 'lucide-react';
+import { WhatsAppIcon } from './icons/WhatsAppIcon';
 
 interface CropCardProps {
   crop: {
@@ -21,14 +22,17 @@ interface CropCardProps {
     farmer?: {
       full_name: string;
       phone?: string;
+      whatsapp?: string;
       email?: string;
     };
   };
   showFarmerContact?: boolean;
   onContact?: () => void;
+  onWhatsApp?: () => void;
+  onViewFarmer?: () => void;
 }
 
-export const CropCard: React.FC<CropCardProps> = ({ crop, showFarmerContact = false, onContact }) => {
+export const CropCard: React.FC<CropCardProps> = ({ crop, showFarmerContact = false, onContact, onWhatsApp, onViewFarmer }) => {
   const initials = (crop.crop_name || "Crop")
     .split(/\s+/)
     .filter(Boolean)
@@ -126,11 +130,34 @@ export const CropCard: React.FC<CropCardProps> = ({ crop, showFarmerContact = fa
       </CardContent>
 
       {showFarmerContact && onContact && (
-        <CardFooter className="p-4 pt-0">
-          <Button onClick={onContact} className="w-full" size="sm">
+        <CardFooter className="p-4 pt-0 gap-2">
+          <Button onClick={onContact} className="flex-1" size="sm">
             <Phone className="h-4 w-4 mr-2" />
-            Contact Farmer
+            Contact
           </Button>
+          {onWhatsApp && (
+            <Button
+              size="icon"
+              variant="outline"
+              className="border-green-600 text-green-700 hover:bg-green-50 dark:hover:bg-green-950"
+              onClick={onWhatsApp}
+              aria-label="WhatsApp farmer"
+              title="WhatsApp"
+            >
+              <WhatsAppIcon size={16} />
+            </Button>
+          )}
+          {onViewFarmer && (
+            <Button
+              size="icon"
+              variant="outline"
+              onClick={onViewFarmer}
+              aria-label="View farmer details"
+              title="View farmer details"
+            >
+              <Info className="h-4 w-4" />
+            </Button>
+          )}
         </CardFooter>
       )}
     </Card>
