@@ -22,7 +22,7 @@ import {
 import { useAuth } from '@/contexts/AuthContext';
 import { supabase } from '@/integrations/supabase/client';
 import { toast } from 'sonner';
-import { cropTypes, stateNames } from '@/data/indianStates';
+import { cropTypes } from '@/data/indianStates';
 import { UserDetailModal, UserDetail } from '@/components/UserDetailModal';
 
 interface CropWithFarmer {
@@ -59,7 +59,6 @@ const BuyerDashboard: React.FC = () => {
   // Filters
   const [searchTerm, setSearchTerm] = useState('');
   const [cropTypeFilter, setCropTypeFilter] = useState('all');
-  const [stateFilter, setStateFilter] = useState('all');
 
   const getFullName = () => {
     if (!profile) return '';
@@ -113,7 +112,7 @@ const BuyerDashboard: React.FC = () => {
       const mappedCrops = (data || []).map(c => ({
         id: c.id,
         crop_name: c.crop_name,
-        crop_type: 'Cereals',
+        crop_type: c.crop_type || 'Other',
         quantity: c.quantity_kg,
         unit: 'kg',
         price_per_unit: c.price_per_kg,
@@ -128,7 +127,7 @@ const BuyerDashboard: React.FC = () => {
         farmer_detail: c.users ? (c.users as UserDetail) : undefined,
       }));
       setCrops(mappedCrops);
-    } catch (error: any) {
+    } catch (error: unknown) {
       console.error('Fetch crops error:', error);
       toast.error('Failed to load crops');
     } finally {
@@ -140,9 +139,10 @@ const BuyerDashboard: React.FC = () => {
     const matchesSearch = !searchTerm || 
       crop.crop_name.toLowerCase().includes(searchTerm.toLowerCase()) ||
       crop.description?.toLowerCase().includes(searchTerm.toLowerCase());
-    const matchesType = cropTypeFilter === 'all' || crop.crop_type === cropTypeFilter;
-    const matchesState = stateFilter === 'all' || crop.state === stateFilter;
-    return matchesSearch && matchesType && matchesState;
+    const matchesType =
+      cropTypeFilter === 'all' ||
+      crop.crop_type?.toLowerCase() === cropTypeFilter.toLowerCase();
+    return matchesSearch && matchesType;
   });
 
   if (authLoading) {
@@ -271,30 +271,15 @@ const BuyerDashboard: React.FC = () => {
                     </SelectContent>
                   </Select>
                 </div>
-                
-                <div>
-                  <label className="text-sm font-medium mb-2 block">State</label>
-                  <Select value={stateFilter} onValueChange={setStateFilter}>
-                    <SelectTrigger>
-                      <SelectValue placeholder="All states" />
-                    </SelectTrigger>
-                    <SelectContent>
-                      <SelectItem value="all">All states</SelectItem>
-                      {stateNames.map((state) => (
-                        <SelectItem key={state} value={state}>{state}</SelectItem>
-                      ))}
-                    </SelectContent>
-                  </Select>
-                </div>
 
-                {(cropTypeFilter !== 'all' || stateFilter !== 'all') && (
+                {cropTypeFilter !== 'all' && (
                   <Button 
                     variant="ghost" 
                     size="sm" 
                     className="w-full"
-                    onClick={() => { setCropTypeFilter('all'); setStateFilter('all'); }}
+                    onClick={() => setCropTypeFilter('all')}
                   >
-                    Clear Filters
+                    Clear Filter
                   </Button>
                 )}
               </CardContent>
@@ -331,8 +316,8 @@ const BuyerDashboard: React.FC = () => {
                     <Wheat className="h-12 w-12 mx-auto text-muted-foreground mb-4" />
                     <h3 className="font-semibold mb-2">No crops found</h3>
                     <p className="text-muted-foreground">
-                      {searchTerm || cropTypeFilter !== 'all' || stateFilter !== 'all'
-                        ? 'Try adjusting your filters' 
+                      {searchTerm || cropTypeFilter !== 'all'
+                        ? 'Try adjusting your crop type filter'
                         : 'No crops are currently available'}
                     </p>
                   </div>

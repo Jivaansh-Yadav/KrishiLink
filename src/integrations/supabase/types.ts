@@ -175,6 +175,14 @@ export type Database = {
         }
         Returns: boolean
       }
+      lookup_login_email: {
+        Args: {
+          identifier: string
+        }
+        Returns: {
+          email: string
+        }[]
+      }
     }
     Enums: {
       app_role: "farmer" | "buyer" | "admin"

@@ -1,8 +1,54 @@
 import React, { useEffect, useState } from 'react';
 import { useSearchParams, useNavigate } from 'react-router-dom';
 import { supabase } from '@/integrations/supabase/client';
+import type { User } from '@supabase/supabase-js';
 import { CheckCircle, XCircle, Loader2 } from 'lucide-react';
 import { Button } from '@/components/ui/button';
+
+
+const getMetadataString = (value: unknown, fallback = '') =>
+  typeof value === 'string' ? value : fallback;
+
+const getMetadataNullableString = (value: unknown) =>
+  typeof value === 'string' && value ? value : null;
+
+const getMetadataRole = (value: unknown): 'farmer' | 'buyer' =>
+  value === 'buyer' ? 'buyer' : 'farmer';
+
+const ensureProfileFromMetadata = async (user: User) => {
+  const { data: existingProfile, error: profileLookupError } = await supabase
+    .from('users')
+    .select('id')
+    .eq('id', user.id)
+    .maybeSingle();
+
+  if (profileLookupError) {
+    console.error('Profile lookup error on auth callback:', profileLookupError);
+    return;
+  }
+
+  if (existingProfile) return;
+
+  const meta = user.user_metadata;
+  const { error: profileError } = await supabase.from('users').insert({
+    id: user.id,
+    first_name: getMetadataString(meta.first_name),
+    last_name: getMetadataNullableString(meta.last_name),
+    mobile_number: getMetadataNullableString(meta.mobile_number),
+    whatsapp_number: getMetadataNullableString(meta.whatsapp_number),
+    email: user.email || getMetadataString(meta.email),
+    state: getMetadataNullableString(meta.state),
+    district: getMetadataNullableString(meta.district),
+    village: getMetadataNullableString(meta.village),
+    postal_code: getMetadataNullableString(meta.postal_code),
+    role: getMetadataRole(meta.role),
+    username: getMetadataString(meta.username, `user${Math.floor(1000 + Math.random() * 9000)}`),
+  });
+
+  if (profileError) {
+    console.error('Profile creation error on auth callback:', profileError);
+  }
+};
 
 const AuthCallback: React.FC = () => {
   const [searchParams] = useSearchParams();
@@ -34,6 +80,7 @@ const AuthCallback: React.FC = () => {
         }
 
         if (session) {
+          await ensureProfileFromMetadata(session.user);
           setStatus('success');
         } else {
           // No session yet, might be processing
@@ -42,6 +89,7 @@ const AuthCallback: React.FC = () => {
           const { data: { session: retrySession } } = await supabase.auth.getSession();
           
           if (retrySession) {
+            await ensureProfileFromMetadata(retrySession.user);
             setStatus('success');
           } else {
             setStatus('error');

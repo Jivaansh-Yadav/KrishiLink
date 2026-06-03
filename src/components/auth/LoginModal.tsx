@@ -19,6 +19,13 @@ interface LoginModalProps {
   onSwitchToRegister: () => void;
 }
 
+const getErrorMessage = (error: unknown, fallback: string) =>
+  error instanceof Error ? error.message : fallback;
+
+const isEmailIdentifier = (identifier: string) => identifier.includes('@');
+
+const normalizeLoginIdentifier = (identifier: string) => identifier.trim();
+
 const LoginModal: React.FC<LoginModalProps> = ({ open, onOpenChange, onSwitchToRegister }) => {
   const navigate = useNavigate();
   const { toast } = useToast();
@@ -37,29 +44,29 @@ const LoginModal: React.FC<LoginModalProps> = ({ open, onOpenChange, onSwitchToR
     setLoading(true);
 
     try {
-      let email = formData.identifier;
+      const identifier = normalizeLoginIdentifier(formData.identifier);
+      let email = identifier;
 
-      // If identifier is not an email, try to find the user by username or mobile
-      if (!formData.identifier.includes('@')) {
-        const { data: userData, error: lookupError } = await supabase
-          .from('users')
-          .select('email')
-          .or(`username.eq.${formData.identifier},mobile_number.eq.+91${formData.identifier}`)
-          .maybeSingle();
+      // Supabase password login requires an email. For username/mobile logins,
+      // resolve the email through a limited RPC that works before authentication.
+      if (!isEmailIdentifier(identifier)) {
+        const { data: lookupRows, error: lookupError } = await supabase
+          .rpc('lookup_login_email', { identifier });
 
         if (lookupError) {
           console.error('User lookup error:', lookupError);
+          throw lookupError;
         }
 
-        if (userData) {
-          email = userData.email;
+        const lookupEmail = lookupRows?.[0]?.email;
+        if (lookupEmail) {
+          email = lookupEmail;
         } else {
           toast({
             title: 'User Not Found',
             description: 'No account found with this username or mobile number. Please check and try again.',
             variant: 'destructive',
           });
-          setLoading(false);
           return;
         }
       }
@@ -125,11 +132,11 @@ const LoginModal: React.FC<LoginModalProps> = ({ open, onOpenChange, onSwitchToR
 
       onOpenChange(false);
       navigate('/dashboard');
-    } catch (error: any) {
+    } catch (error: unknown) {
       console.error('Login error:', error);
       toast({
         title: 'Login Failed',
-        description: error.message || 'Invalid credentials',
+        description: getErrorMessage(error, 'Invalid credentials'),
         variant: 'destructive',
       });
     } finally {
@@ -155,10 +162,10 @@ const LoginModal: React.FC<LoginModalProps> = ({ open, onOpenChange, onSwitchToR
 
       setShowResetPassword(false);
       setResetEmail('');
-    } catch (error: any) {
+    } catch (error: unknown) {
       toast({
         title: 'Error',
-        description: error.message || 'Failed to send reset email',
+        description: getErrorMessage(error, 'Failed to send reset email'),
         variant: 'destructive',
       });
     } finally {
