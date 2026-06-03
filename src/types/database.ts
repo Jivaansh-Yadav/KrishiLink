@@ -22,7 +22,6 @@ export interface Database {
           postal_code: string | null
           role: 'farmer' | 'buyer' | 'admin'
           username: string
-          alternate_mobile: string | null
           whatsapp_number: string | null
           profile_photo: string | null
           created_at: string
@@ -40,7 +39,6 @@ export interface Database {
           postal_code?: string | null
           role: 'farmer' | 'buyer' | 'admin'
           username: string
-          alternate_mobile?: string | null
           whatsapp_number?: string | null
           profile_photo?: string | null
           created_at?: string
@@ -58,7 +56,6 @@ export interface Database {
           postal_code?: string | null
           role?: 'farmer' | 'buyer' | 'admin'
           username?: string
-          alternate_mobile?: string | null
           whatsapp_number?: string | null
           profile_photo?: string | null
           created_at?: string
