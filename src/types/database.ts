@@ -149,7 +149,14 @@ export interface Database {
       [_ in never]: never
     }
     Functions: {
-      [_ in never]: never
+      lookup_login_email: {
+        Args: {
+          identifier: string
+        }
+        Returns: {
+          email: string
+        }[]
+      }
     }
     Enums: {
       user_role: 'farmer' | 'buyer' | 'admin'
