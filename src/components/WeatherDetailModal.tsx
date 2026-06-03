@@ -1,11 +1,13 @@
-import React from 'react';
+import React, { useEffect, useState } from 'react';
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from '@/components/ui/dialog';
 import { Card, CardContent } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import {
   Cloud, Sun, CloudRain, Wind, Droplets, Thermometer,
   Sunrise, Sunset, CalendarDays, AlertTriangle, CheckCircle2, ShieldAlert,
+  Sparkles, Loader2, Gauge, Moon,
 } from 'lucide-react';
+import { supabase } from '@/integrations/supabase/client';
 
 interface ForecastDay {
   date?: string;
@@ -45,7 +47,7 @@ interface Props {
   open: boolean;
   onOpenChange: (v: boolean) => void;
   weather: WeatherDetail | null;
-  aiSummary: AiSummary | null;
+  location?: string;
 }
 
 const severityStyles: Record<string, { bg: string; text: string; icon: React.ReactNode; label: string }> = {
@@ -54,10 +56,43 @@ const severityStyles: Record<string, { bg: string; text: string; icon: React.Rea
   red: { bg: 'bg-red-500/10 border-red-500/30', text: 'text-red-700 dark:text-red-400', icon: <ShieldAlert className="h-5 w-5" />, label: 'Warning' },
 };
 
-export const WeatherDetailModal: React.FC<Props> = ({ open, onOpenChange, weather, aiSummary }) => {
+export const WeatherDetailModal: React.FC<Props> = ({ open, onOpenChange, weather, location }) => {
+  const [aiSummary, setAiSummary] = useState<AiSummary | null>(null);
+  const [aiLoading, setAiLoading] = useState(false);
+
+  useEffect(() => {
+    if (!open || !weather || aiSummary) return;
+    let cancelled = false;
+    (async () => {
+      try {
+        setAiLoading(true);
+        const { data } = await supabase.functions.invoke('ai', {
+          body: { mode: 'weather-summary', weather, location: location || weather.location?.name },
+        });
+        const raw = (data as any)?.content || '';
+        const cleaned = raw.replace(/```json|```/g, '').trim();
+        const match = cleaned.match(/\{[\s\S]*\}/);
+        if (match && !cancelled) {
+          setAiSummary(JSON.parse(match[0]));
+        }
+      } catch (err) {
+        console.warn('AI weather summary failed:', err);
+      } finally {
+        if (!cancelled) setAiLoading(false);
+      }
+    })();
+    return () => { cancelled = true; };
+  }, [open, weather, location, aiSummary]);
+
   if (!weather) return null;
   const sev = aiSummary ? severityStyles[aiSummary.severity] || severityStyles.green : null;
   const forecast = weather.forecast || [];
+  const rain = weather.rainfall as any;
+  const rainText = rain
+    ? (typeof rain === 'object'
+        ? (rain.last_24hrs ?? rain.value ?? JSON.stringify(rain))
+        : String(rain))
+    : null;
 
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
@@ -71,11 +106,21 @@ export const WeatherDetailModal: React.FC<Props> = ({ open, onOpenChange, weathe
 
         <div className="space-y-4">
           {/* AI Advisory */}
+          {aiLoading && !aiSummary && (
+            <Card className="border-2 border-dashed">
+              <CardContent className="p-4 flex items-center gap-2 text-sm text-muted-foreground">
+                <Loader2 className="h-4 w-4 animate-spin" />
+                <Sparkles className="h-4 w-4 text-primary" />
+                Generating AI weather advisory…
+              </CardContent>
+            </Card>
+          )}
           {aiSummary && sev && (
             <Card className={`border-2 ${sev.bg}`}>
               <CardContent className="p-4 space-y-3">
                 <div className={`flex items-center gap-2 font-semibold ${sev.text}`}>
                   {sev.icon}
+                  <Sparkles className="h-4 w-4" />
                   <span>{sev.label}: {aiSummary.headline}</span>
                 </div>
                 <p className="text-sm">{aiSummary.summary}</p>
@@ -112,10 +157,10 @@ export const WeatherDetailModal: React.FC<Props> = ({ open, onOpenChange, weathe
                 <div className="flex items-center gap-2"><Droplets className="h-4 w-4 text-blue-500" /><span>{weather.current.humidity}% RH</span></div>
                 <div className="flex items-center gap-2"><Wind className="h-4 w-4 text-teal-500" /><span>{Math.round(weather.current.wind_kph)} km/h</span></div>
               </div>
-              {weather.rainfall && (
+              {rainText && (
                 <div className="mt-3 flex items-center gap-2 text-sm">
                   <CloudRain className="h-4 w-4 text-blue-600" />
-                  <span>Rainfall: {typeof weather.rainfall === 'object' ? JSON.stringify(weather.rainfall) : String(weather.rainfall)}</span>
+                  <span>Rainfall: {rainText}</span>
                 </div>
               )}
             </CardContent>
