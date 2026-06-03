@@ -35,6 +35,7 @@ const Profile: React.FC = () => {
     lastName: '',
     email: '',
     mobileNumber: '',
+    whatsappNumber: '',
     state: '',
     district: '',
     village: '',
@@ -60,6 +61,7 @@ const Profile: React.FC = () => {
         lastName: profile.last_name || '',
         email: profile.email || '',
         mobileNumber: profile.mobile_number || '',
+        whatsappNumber: (profile as any).whatsapp_number || '',
         state: profile.state || '',
         district: profile.district || '',
         village: (profile as any).village || '',
@@ -124,6 +126,7 @@ const Profile: React.FC = () => {
           first_name: formData.firstName,
           last_name: formData.lastName,
           mobile_number: formData.mobileNumber,
+          whatsapp_number: formData.whatsappNumber || null,
           email: formData.email,
           state: formData.state,
           district: formData.district,
@@ -335,6 +338,22 @@ const Profile: React.FC = () => {
                   onChange={(e) => setFormData({ ...formData, mobileNumber: e.target.value })}
                   placeholder="+91 XXXXXXXXXX"
                 />
+              </div>
+
+              <div>
+                <Label htmlFor="whatsappNumber" className="flex items-center gap-2">
+                  <Phone className="h-4 w-4" />
+                  WhatsApp Number <span className="text-xs text-muted-foreground">(optional)</span>
+                </Label>
+                <Input
+                  id="whatsappNumber"
+                  value={formData.whatsappNumber}
+                  onChange={(e) => setFormData({ ...formData, whatsappNumber: e.target.value })}
+                  placeholder="+91 XXXXXXXXXX"
+                />
+                <p className="text-xs text-muted-foreground mt-1">
+                  Buyers/Farmers can reach you on WhatsApp using this number.
+                </p>
               </div>
 
               <div className="grid grid-cols-2 gap-4">

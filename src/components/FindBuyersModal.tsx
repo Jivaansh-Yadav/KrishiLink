@@ -13,6 +13,8 @@ import { Badge } from '@/components/ui/badge';
 import { User, Phone, Mail, MapPin, Search, Loader2, ShoppingCart } from 'lucide-react';
 import { supabase } from '@/integrations/supabase/client';
 import { toast } from 'sonner';
+import { WhatsAppIcon } from './icons/WhatsAppIcon';
+import { UserDetailModal, UserDetail } from './UserDetailModal';
 
 interface Buyer {
   id: string;
@@ -20,8 +22,13 @@ interface Buyer {
   first_name: string;
   last_name: string;
   mobile_number: string;
+  whatsapp_number?: string | null;
   email: string;
   state: string;
+  district?: string | null;
+  village?: string | null;
+  postal_code?: string | null;
+  profile_photo?: string | null;
 }
 
 interface FindBuyersModalProps {
@@ -33,6 +40,7 @@ export const FindBuyersModal: React.FC<FindBuyersModalProps> = ({ open, onOpenCh
   const [buyers, setBuyers] = useState<Buyer[]>([]);
   const [loading, setLoading] = useState(false);
   const [searchQuery, setSearchQuery] = useState('');
+  const [selected, setSelected] = useState<UserDetail | null>(null);
 
   useEffect(() => {
     if (open) {
@@ -45,7 +53,7 @@ export const FindBuyersModal: React.FC<FindBuyersModalProps> = ({ open, onOpenCh
     try {
       const { data, error } = await supabase
         .from('users')
-        .select('id, username, first_name, last_name, mobile_number, email, state')
+        .select('id, username, first_name, last_name, mobile_number, whatsapp_number, email, state, district, village, postal_code, profile_photo, role')
         .eq('role', 'buyer')
         .order('first_name', { ascending: true });
 
@@ -79,7 +87,14 @@ export const FindBuyersModal: React.FC<FindBuyersModalProps> = ({ open, onOpenCh
     }
   };
 
+  const handleWhatsApp = (buyer: Buyer) => {
+    const wa = (buyer.whatsapp_number || buyer.mobile_number || '').replace(/[^\d+]/g, '').replace('+', '');
+    if (!wa) return toast.info('No WhatsApp number available for this buyer');
+    window.open(`https://wa.me/${wa}`, '_blank');
+  };
+
   return (
+    <>
     <Dialog open={open} onOpenChange={onOpenChange}>
       <DialogContent className="max-w-2xl max-h-[85vh] overflow-hidden flex flex-col">
         <DialogHeader>
@@ -117,7 +132,11 @@ export const FindBuyersModal: React.FC<FindBuyersModalProps> = ({ open, onOpenCh
             </div>
           ) : (
             filteredBuyers.map((buyer) => (
-              <Card key={buyer.id} className="hover:shadow-md transition-shadow">
+              <Card
+                key={buyer.id}
+                className="hover:shadow-md transition-shadow cursor-pointer"
+                onClick={() => setSelected({ ...buyer, role: 'buyer' })}
+              >
                 <CardContent className="p-4">
                   <div className="flex items-start justify-between gap-4">
                     <div className="flex items-start gap-3">
@@ -157,14 +176,25 @@ export const FindBuyersModal: React.FC<FindBuyersModalProps> = ({ open, onOpenCh
                         </div>
                       </div>
                     </div>
-                    <Button
-                      size="sm"
-                      onClick={() => handleContact(buyer)}
-                      className="flex-shrink-0"
+                    <div
+                      className="flex flex-shrink-0 gap-1"
+                      onClick={(e) => e.stopPropagation()}
                     >
-                      <Phone className="h-4 w-4 mr-1" />
-                      Contact
-                    </Button>
+                      <Button size="sm" onClick={() => handleContact(buyer)}>
+                        <Phone className="h-4 w-4 mr-1" />
+                        Contact
+                      </Button>
+                      <Button
+                        size="icon"
+                        variant="outline"
+                        className="border-green-600 text-green-700 hover:bg-green-50 dark:hover:bg-green-950"
+                        onClick={() => handleWhatsApp(buyer)}
+                        aria-label="WhatsApp"
+                        title="WhatsApp"
+                      >
+                        <WhatsAppIcon size={16} />
+                      </Button>
+                    </div>
                   </div>
                 </CardContent>
               </Card>
@@ -173,5 +203,7 @@ export const FindBuyersModal: React.FC<FindBuyersModalProps> = ({ open, onOpenCh
         </div>
       </DialogContent>
     </Dialog>
+    <UserDetailModal open={!!selected} onOpenChange={(v) => !v && setSelected(null)} user={selected} />
+    </>
   );
 };
