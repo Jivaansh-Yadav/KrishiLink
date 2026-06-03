@@ -23,6 +23,7 @@ import { useAuth } from '@/contexts/AuthContext';
 import { supabase } from '@/integrations/supabase/client';
 import { toast } from 'sonner';
 import { cropTypes, stateNames } from '@/data/indianStates';
+import { UserDetailModal, UserDetail } from '@/components/UserDetailModal';
 
 interface CropWithFarmer {
   id: string;
@@ -40,8 +41,10 @@ interface CropWithFarmer {
   farmer?: {
     full_name: string;
     phone?: string;
+    whatsapp?: string;
     email?: string;
   };
+  farmer_detail?: UserDetail;
 }
 
 const BuyerDashboard: React.FC = () => {
@@ -51,6 +54,7 @@ const BuyerDashboard: React.FC = () => {
   const [crops, setCrops] = useState<CropWithFarmer[]>([]);
   const [loadingCrops, setLoadingCrops] = useState(true);
   const [showMSP, setShowMSP] = useState(false);
+  const [selectedFarmer, setSelectedFarmer] = useState<UserDetail | null>(null);
   
   // Filters
   const [searchTerm, setSearchTerm] = useState('');
@@ -86,10 +90,19 @@ const BuyerDashboard: React.FC = () => {
         .select(`
           *,
           users!crops_user_id_fkey (
+            id,
+            username,
             first_name,
             last_name,
             mobile_number,
-            email
+            whatsapp_number,
+            email,
+            state,
+            district,
+            village,
+            postal_code,
+            profile_photo,
+            role
           )
         `)
         .order('created_at', { ascending: false });
@@ -109,8 +122,10 @@ const BuyerDashboard: React.FC = () => {
         farmer: c.users ? {
           full_name: `${c.users.first_name} ${c.users.last_name || ''}`.trim(),
           phone: c.users.mobile_number,
+          whatsapp: c.users.whatsapp_number,
           email: c.users.email,
         } : undefined,
+        farmer_detail: c.users ? (c.users as UserDetail) : undefined,
       }));
       setCrops(mappedCrops);
     } catch (error: any) {
@@ -337,6 +352,16 @@ const BuyerDashboard: React.FC = () => {
                               window.open(`tel:${crop.farmer.phone}`);
                             }
                           }}
+                          onWhatsApp={() => {
+                            const wa = (crop.farmer?.whatsapp || crop.farmer?.phone || '')
+                              .replace(/[^\d+]/g, '').replace('+', '');
+                            if (!wa) {
+                              toast.info('No WhatsApp number available for this farmer');
+                              return;
+                            }
+                            window.open(`https://wa.me/${wa}`, '_blank');
+                          }}
+                          onViewFarmer={() => crop.farmer_detail && setSelectedFarmer(crop.farmer_detail)}
                         />
                       ))}
                     </div>
@@ -350,6 +375,11 @@ const BuyerDashboard: React.FC = () => {
 
       <Footer />
       <MSPListModal open={showMSP} onOpenChange={setShowMSP} />
+      <UserDetailModal
+        open={!!selectedFarmer}
+        onOpenChange={(v) => !v && setSelectedFarmer(null)}
+        user={selectedFarmer}
+      />
     </div>
   );
 };
