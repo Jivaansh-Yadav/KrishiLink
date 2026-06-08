@@ -19,3 +19,6 @@ verify_jwt = false
 
 [functions.ai]
 verify_jwt = false
+
+[functions.bhashini-transliterate]
+verify_jwt = false
