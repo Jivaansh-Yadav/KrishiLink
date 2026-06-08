@@ -19,7 +19,6 @@ interface CropCardProps {
     state?: string;
     image_url?: string;
     image_urls?: string[];
-    status: string;
     farmer?: {
       full_name: string;
       phone?: string;
@@ -47,12 +46,6 @@ export const CropCard: React.FC<CropCardProps> = ({ crop, showFarmerContact = fa
     .map((w) => w[0]?.toUpperCase())
     .join("");
 
-  const statusClass =
-    crop.status === "available"
-      ? "bg-primary text-primary-foreground"
-      : crop.status === "sold"
-        ? "bg-destructive text-destructive-foreground"
-        : "bg-secondary text-secondary-foreground";
 
   return (
     <Card className="overflow-hidden hover:shadow-lg transition-shadow">
@@ -98,9 +91,6 @@ export const CropCard: React.FC<CropCardProps> = ({ crop, showFarmerContact = fa
           </div>
         )}
 
-        <Badge className={`absolute top-2 right-2 ${statusClass}`}>
-          {crop.status}
-        </Badge>
 
         {onEdit && (
           <Button

@@ -35,7 +35,6 @@ interface Crop {
   state?: string;
   image_url?: string;
   image_urls?: string[];
-  status: string;
 }
 
 const FarmerDashboard: React.FC = () => {
@@ -93,7 +92,6 @@ const FarmerDashboard: React.FC = () => {
         price_per_unit: c.price_per_kg,
         image_url: c.photo_url,
         image_urls: (c as any).photo_urls || (c.photo_url ? [c.photo_url] : []),
-        status: 'available',
       }));
       setCrops(mappedCrops);
     } catch (error: any) {
