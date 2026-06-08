@@ -7,6 +7,7 @@ import { MSPListModal } from '@/components/MSPListModal';
 import { CropDiseaseModal } from '@/components/CropDiseaseModal';
 import { AIChatModal } from '@/components/AIChatModal';
 import { AddCropModal } from '@/components/AddCropModal';
+import { EditCropModal } from '@/components/EditCropModal';
 import { CropCard } from '@/components/CropCard';
 import { FindBuyersModal } from '@/components/FindBuyersModal';
 import { ExpertAdvisoryCard } from '@/components/ExpertAdvisoryCard';
@@ -33,6 +34,7 @@ interface Crop {
   location?: string;
   state?: string;
   image_url?: string;
+  image_urls?: string[];
   status: string;
 }
 
@@ -48,6 +50,7 @@ const FarmerDashboard: React.FC = () => {
   const [showAIChat, setShowAIChat] = useState(false);
   const [showAddCrop, setShowAddCrop] = useState(false);
   const [showFindBuyers, setShowFindBuyers] = useState(false);
+  const [editingCrop, setEditingCrop] = useState<Crop | null>(null);
 
   const getFullName = () => {
     if (!profile) return '';
@@ -89,6 +92,7 @@ const FarmerDashboard: React.FC = () => {
         unit: 'kg',
         price_per_unit: c.price_per_kg,
         image_url: c.photo_url,
+        image_urls: (c as any).photo_urls || (c.photo_url ? [c.photo_url] : []),
         status: 'available',
       }));
       setCrops(mappedCrops);
@@ -269,7 +273,7 @@ const FarmerDashboard: React.FC = () => {
                 ) : (
                   <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                     {crops.map((crop) => (
-                      <CropCard key={crop.id} crop={crop} />
+                      <CropCard key={crop.id} crop={crop} onEdit={() => setEditingCrop(crop)} />
                     ))}
                   </div>
                 )}
@@ -298,6 +302,12 @@ const FarmerDashboard: React.FC = () => {
       <CropDiseaseModal open={showDisease} onOpenChange={setShowDisease} />
       <AIChatModal open={showAIChat} onOpenChange={setShowAIChat} />
       <AddCropModal open={showAddCrop} onOpenChange={setShowAddCrop} onSuccess={fetchCrops} />
+      <EditCropModal
+        open={!!editingCrop}
+        onOpenChange={(o) => !o && setEditingCrop(null)}
+        crop={editingCrop}
+        onSuccess={() => { setEditingCrop(null); fetchCrops(); }}
+      />
       <FindBuyersModal open={showFindBuyers} onOpenChange={setShowFindBuyers} />
     </div>
   );
