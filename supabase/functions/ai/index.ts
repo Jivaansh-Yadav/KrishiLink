@@ -8,13 +8,15 @@ const corsHeaders = {
 type ChatMsg = { role: "user" | "assistant"; content: string };
 
 type AiRequest =
-  | { mode: "translate"; text: string; targetLanguage: string }
   | { mode: "chat"; messages: ChatMsg[] }
   | { mode: "disease"; symptoms?: string; imageBase64?: string; mimeType?: string }
   | { mode: "weather-summary"; weather: any; location?: string };
 
 const CHAT_SYSTEM_PROMPT = `You are KrishiBot, an AI assistant for KrishiLink - an agricultural marketplace platform in India.
 Help farmers and buyers with practical, actionable advice. Keep answers concise and clear.
+Provide responses in Hindi unless another language is explicitly requested.
+You can use internet information for the latest agricultural updates and weather insights.
+Do not use markdown formatting such as **, backticks, ##, or code blocks.
 You can answer questions about:
 - Crop prices and MSP (Minimum Support Price)
 - Farming techniques and best practices
@@ -24,7 +26,7 @@ You can answer questions about:
 - Market trends and buyer connections`;
 
 // Use Gemini 2.5 Flash Lite model - correct model name per docs
-const GEMINI_MODEL = "gemini-2.5-flash";
+const GEMINI_MODEL = "gemini-2.5-flash-lite";
 
 function geminiEndpoint(apiKey: string) {
   return `https://generativelanguage.googleapis.com/v1beta/models/${GEMINI_MODEL}:generateContent?key=${apiKey}`;
@@ -48,18 +50,11 @@ serve(async (req) => {
 
     let requestBody: any;
 
-    if (body.mode === "translate") {
-      const prompt = `Translate the following text to ${body.targetLanguage}. Only return the translated text, nothing else.\n\n${body.text}`;
-      requestBody = { 
-        contents: [{ 
-          parts: [{ text: prompt }] 
-        }] 
-      };
-    } else if (body.mode === "chat") {
+    if (body.mode === "chat") {
       const messages = body.messages || [];
       // Build conversation with system prompt as first user message
       const contents = [
-        { role: "user", parts: [{ text: CHAT_SYSTEM_PROMPT + "\n\nPlease acknowledge that you understand your role." }] },
+        { role: "user", parts: [{ text: CHAT_SYSTEM_PROMPT }] },
         { role: "model", parts: [{ text: "Namaste! I am KrishiBot, your agricultural assistant. I'm here to help you with farming advice, crop information, MSP rates, disease management, and government schemes. How can I help you today?" }] },
         ...messages.map((m) => ({
           role: m.role === "assistant" ? "model" : "user",
@@ -73,7 +68,7 @@ serve(async (req) => {
 
 ${symptoms ? `The farmer describes these symptoms: ${symptoms}` : "Analyze the provided image of a crop/plant."}
 
-Provide a detailed diagnosis. If you cannot identify a specific disease, provide general advice.
+Provide a detailed diagnosis in Hindi unless another language is explicitly requested. If you cannot identify a specific disease, provide general advice.
 
 You MUST respond with valid JSON in this exact format (no markdown, no code blocks, just pure JSON):
 {
@@ -100,6 +95,8 @@ You MUST respond with valid JSON in this exact format (no markdown, no code bloc
     } else if (body.mode === "weather-summary") {
       const prompt = `You are an agricultural weather advisor for Indian farmers.
 Given this weather data for ${body.location || "the farm"}: ${JSON.stringify(body.weather).substring(0, 2000)}
+
+Provide insights in Hindi unless another language is explicitly requested. Use internet information if needed to interpret the latest weather conditions and farming impact.
 
 Return ONLY valid JSON (no markdown) in this exact shape:
 {
