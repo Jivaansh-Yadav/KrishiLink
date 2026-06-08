@@ -21,6 +21,7 @@ import { useAuth } from '@/contexts/AuthContext';
 import { supabase } from '@/integrations/supabase/client';
 import { toast } from 'sonner';
 import { stateNames } from '@/data/indianStates';
+import { stateDistricts } from '@/data/districts';
 
 const Profile: React.FC = () => {
   const navigate = useNavigate();
@@ -364,7 +365,7 @@ const Profile: React.FC = () => {
                   </Label>
                   <Select
                     value={formData.state}
-                    onValueChange={(value) => setFormData({ ...formData, state: value })}
+                    onValueChange={(value) => setFormData({ ...formData, state: value, district: '' })}
                   >
                     <SelectTrigger>
                       <SelectValue placeholder="Select your state" />
@@ -378,12 +379,20 @@ const Profile: React.FC = () => {
                 </div>
                 <div>
                   <Label htmlFor="district">District</Label>
-                  <Input
-                    id="district"
+                  <Select
                     value={formData.district}
-                    onChange={(e) => setFormData({ ...formData, district: e.target.value })}
-                    placeholder="Your district"
-                  />
+                    onValueChange={(value) => setFormData({ ...formData, district: value })}
+                    disabled={!formData.state}
+                  >
+                    <SelectTrigger>
+                      <SelectValue placeholder={formData.state ? 'Select district' : 'Select state first'} />
+                    </SelectTrigger>
+                    <SelectContent className="max-h-60">
+                      {(stateDistricts[formData.state] || []).map((d) => (
+                        <SelectItem key={d} value={d}>{d}</SelectItem>
+                      ))}
+                    </SelectContent>
+                  </Select>
                 </div>
               </div>
 
