@@ -21,6 +21,7 @@ export type Database = {
           crop_type: string | null
           id: string
           photo_url: string | null
+          photo_urls: string[]
           price_per_kg: number
           quantity_kg: number
           updated_at: string | null
@@ -32,6 +33,7 @@ export type Database = {
           crop_type?: string | null
           id?: string
           photo_url?: string | null
+          photo_urls?: string[]
           price_per_kg: number
           quantity_kg: number
           updated_at?: string | null
@@ -43,6 +45,7 @@ export type Database = {
           crop_type?: string | null
           id?: string
           photo_url?: string | null
+          photo_urls?: string[]
           price_per_kg?: number
           quantity_kg?: number
           updated_at?: string | null

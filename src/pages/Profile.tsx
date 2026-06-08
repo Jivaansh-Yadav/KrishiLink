@@ -21,10 +21,14 @@ import { useAuth } from '@/contexts/AuthContext';
 import { supabase } from '@/integrations/supabase/client';
 import { toast } from 'sonner';
 import { stateNames } from '@/data/indianStates';
+import { stateDistricts } from '@/data/districts';
+import { useLanguage } from '@/contexts/LanguageContext';
+import { Globe } from 'lucide-react';
 
 const Profile: React.FC = () => {
   const navigate = useNavigate();
   const { user, profile, loading: authLoading, refreshProfile } = useAuth();
+  const { currentLanguage, setLanguage, languages } = useLanguage();
   
   const [saving, setSaving] = useState(false);
   const [uploadingImage, setUploadingImage] = useState(false);
@@ -224,6 +228,33 @@ const Profile: React.FC = () => {
         </Button>
 
         <div className="space-y-6">
+          {/* Language preference */}
+          <Card>
+            <CardHeader>
+              <CardTitle className="flex items-center gap-2">
+                <Globe className="h-5 w-5" />
+                Language Preference
+              </CardTitle>
+            </CardHeader>
+            <CardContent>
+              <Select value={currentLanguage} onValueChange={setLanguage}>
+                <SelectTrigger className="w-full sm:w-72">
+                  <SelectValue />
+                </SelectTrigger>
+                <SelectContent className="max-h-72">
+                  {languages.map((lang) => (
+                    <SelectItem key={lang.code} value={lang.code}>
+                      {lang.nativeName} <span className="text-muted-foreground text-xs ml-1">({lang.name})</span>
+                    </SelectItem>
+                  ))}
+                </SelectContent>
+              </Select>
+              <p className="text-xs text-muted-foreground mt-2">
+                Used for on-the-fly transliteration powered by Bhashini.
+              </p>
+            </CardContent>
+          </Card>
+
           {/* Profile Picture */}
           <Card>
             <CardHeader>
@@ -364,7 +395,7 @@ const Profile: React.FC = () => {
                   </Label>
                   <Select
                     value={formData.state}
-                    onValueChange={(value) => setFormData({ ...formData, state: value })}
+                    onValueChange={(value) => setFormData({ ...formData, state: value, district: '' })}
                   >
                     <SelectTrigger>
                       <SelectValue placeholder="Select your state" />
@@ -378,12 +409,20 @@ const Profile: React.FC = () => {
                 </div>
                 <div>
                   <Label htmlFor="district">District</Label>
-                  <Input
-                    id="district"
+                  <Select
                     value={formData.district}
-                    onChange={(e) => setFormData({ ...formData, district: e.target.value })}
-                    placeholder="Your district"
-                  />
+                    onValueChange={(value) => setFormData({ ...formData, district: value })}
+                    disabled={!formData.state}
+                  >
+                    <SelectTrigger>
+                      <SelectValue placeholder={formData.state ? 'Select district' : 'Select state first'} />
+                    </SelectTrigger>
+                    <SelectContent className="max-h-60">
+                      {(stateDistricts[formData.state] || []).map((d) => (
+                        <SelectItem key={d} value={d}>{d}</SelectItem>
+                      ))}
+                    </SelectContent>
+                  </Select>
                 </div>
               </div>
 

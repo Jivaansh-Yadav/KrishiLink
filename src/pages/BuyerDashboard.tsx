@@ -37,6 +37,7 @@ interface CropWithFarmer {
   location?: string;
   state?: string;
   image_url?: string;
+  image_urls?: string[];
   status: string;
   farmer?: {
     full_name: string;
@@ -117,6 +118,7 @@ const BuyerDashboard: React.FC = () => {
         unit: 'kg',
         price_per_unit: c.price_per_kg,
         image_url: c.photo_url,
+        image_urls: (c as any).photo_urls || (c.photo_url ? [c.photo_url] : []),
         status: 'available',
         farmer: c.users ? {
           full_name: `${c.users.first_name} ${c.users.last_name || ''}`.trim(),

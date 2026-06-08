@@ -16,7 +16,7 @@ import {
   SelectTrigger,
   SelectValue,
 } from '@/components/ui/select';
-import { Upload, Loader2, Plus } from 'lucide-react';
+import { Upload, Loader2, Plus, X } from 'lucide-react';
 import { toast } from 'sonner';
 import { supabase } from '@/integrations/supabase/client';
 import { useAuth } from '@/contexts/AuthContext';
@@ -33,8 +33,11 @@ export const AddCropModal: React.FC<AddCropModalProps> = ({ open, onOpenChange, 
   const { user } = useAuth();
   const [loading, setLoading] = useState(false);
   const [showMSP, setShowMSP] = useState(false);
-  const [imageFile, setImageFile] = useState<File | null>(null);
-  const [imagePreview, setImagePreview] = useState<string | null>(null);
+  const [imageFiles, setImageFiles] = useState<File[]>([]);
+  const [imagePreviews, setImagePreviews] = useState<string[]>([]);
+
+  const MAX_PHOTOS = 6;
+  const MAX_BYTES = 2 * 1024 * 1024; // 2MB
   
   const [formData, setFormData] = useState({
     cropName: '',
@@ -45,15 +48,33 @@ export const AddCropModal: React.FC<AddCropModalProps> = ({ open, onOpenChange, 
   });
 
   const handleImageChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    const file = e.target.files?.[0];
-    if (file) {
-      setImageFile(file);
-      const reader = new FileReader();
-      reader.onloadend = () => {
-        setImagePreview(reader.result as string);
-      };
-      reader.readAsDataURL(file);
+    const files = Array.from(e.target.files || []);
+    const accepted: File[] = [];
+    for (const f of files) {
+      if (f.size > MAX_BYTES) {
+        toast.error(`${f.name} exceeds 2MB and was skipped`);
+        continue;
+      }
+      accepted.push(f);
     }
+    const next = [...imageFiles, ...accepted].slice(0, MAX_PHOTOS);
+    setImageFiles(next);
+    Promise.all(
+      next.map(
+        (f) =>
+          new Promise<string>((resolve) => {
+            const r = new FileReader();
+            r.onloadend = () => resolve(r.result as string);
+            r.readAsDataURL(f);
+          }),
+      ),
+    ).then(setImagePreviews);
+    e.target.value = '';
+  };
+
+  const removePhoto = (idx: number) => {
+    setImageFiles((arr) => arr.filter((_, i) => i !== idx));
+    setImagePreviews((arr) => arr.filter((_, i) => i !== idx));
   };
 
   const handleSubmit = async (e: React.FormEvent) => {
@@ -71,25 +92,19 @@ export const AddCropModal: React.FC<AddCropModalProps> = ({ open, onOpenChange, 
     setLoading(true);
 
     try {
-      let photoUrl = null;
-
-      // Upload image if provided
-      if (imageFile) {
-        const fileExt = imageFile.name.split('.').pop();
-        const fileName = `${user.id}/${Date.now()}.${fileExt}`;
-        
-        const { error: uploadError, data: uploadData } = await supabase.storage
+      const photoUrls: string[] = [];
+      for (const file of imageFiles) {
+        const fileExt = file.name.split('.').pop();
+        const fileName = `${user.id}/${Date.now()}-${Math.random().toString(36).slice(2, 8)}.${fileExt}`;
+        const { error: uploadError } = await supabase.storage
           .from('crop-images')
-          .upload(fileName, imageFile);
-
+          .upload(fileName, file);
         if (uploadError) {
           console.error('Upload error:', uploadError);
-        } else {
-          const { data: urlData } = supabase.storage
-            .from('crop-images')
-            .getPublicUrl(fileName);
-          photoUrl = urlData.publicUrl;
+          continue;
         }
+        const { data: urlData } = supabase.storage.from('crop-images').getPublicUrl(fileName);
+        photoUrls.push(urlData.publicUrl);
       }
 
       // Insert crop record with crop_type
@@ -99,8 +114,9 @@ export const AddCropModal: React.FC<AddCropModalProps> = ({ open, onOpenChange, 
         crop_type: formData.cropType || 'Other',
         quantity_kg: parseFloat(formData.quantity),
         price_per_kg: parseFloat(formData.pricePerKg),
-        photo_url: photoUrl,
-      });
+        photo_url: photoUrls[0] || null,
+        photo_urls: photoUrls,
+      } as any);
 
       if (error) throw error;
 
@@ -116,8 +132,8 @@ export const AddCropModal: React.FC<AddCropModalProps> = ({ open, onOpenChange, 
         pricePerKg: '',
         description: '',
       });
-      setImageFile(null);
-      setImagePreview(null);
+      setImageFiles([]);
+      setImagePreviews([]);
     } catch (error: any) {
       console.error('Add crop error:', error);
       toast.error(error.message || 'Failed to add crop');
@@ -139,37 +155,36 @@ export const AddCropModal: React.FC<AddCropModalProps> = ({ open, onOpenChange, 
         <form onSubmit={handleSubmit} className="space-y-4">
           {/* Image Upload */}
           <div>
-            <Label>Crop Image</Label>
+            <Label>Crop Photos <span className="text-xs text-muted-foreground">(up to {MAX_PHOTOS}, 2MB each)</span></Label>
             <div className="mt-2">
-              {imagePreview ? (
-                <div className="relative">
-                  <img
-                    src={imagePreview}
-                    alt="Crop preview"
-                    className="w-full h-32 object-cover rounded-lg"
-                  />
-                  <Button
-                    type="button"
-                    variant="destructive"
-                    size="sm"
-                    className="absolute top-2 right-2"
-                    onClick={() => { setImageFile(null); setImagePreview(null); }}
-                  >
-                    Remove
-                  </Button>
-                </div>
-              ) : (
-                <label className="flex flex-col items-center justify-center w-full h-24 border-2 border-dashed border-muted-foreground/25 rounded-lg cursor-pointer hover:bg-muted/50 transition-colors">
-                  <Upload className="h-6 w-6 text-muted-foreground mb-1" />
-                  <span className="text-sm text-muted-foreground">Upload image</span>
-                  <Input
-                    type="file"
-                    accept="image/*"
-                    className="hidden"
-                    onChange={handleImageChange}
-                  />
-                </label>
-              )}
+              <div className="grid grid-cols-3 gap-2">
+                {imagePreviews.map((src, i) => (
+                  <div key={i} className="relative aspect-square rounded-lg overflow-hidden border">
+                    <img src={src} alt={`Preview ${i + 1}`} className="w-full h-full object-cover" />
+                    <button
+                      type="button"
+                      onClick={() => removePhoto(i)}
+                      className="absolute top-1 right-1 bg-destructive text-destructive-foreground rounded-full p-1"
+                      aria-label="Remove photo"
+                    >
+                      <X className="h-3 w-3" />
+                    </button>
+                  </div>
+                ))}
+                {imageFiles.length < MAX_PHOTOS && (
+                  <label className="flex flex-col items-center justify-center aspect-square border-2 border-dashed border-muted-foreground/25 rounded-lg cursor-pointer hover:bg-muted/50 transition-colors">
+                    <Upload className="h-5 w-5 text-muted-foreground mb-1" />
+                    <span className="text-xs text-muted-foreground">Add</span>
+                    <Input
+                      type="file"
+                      accept="image/*"
+                      multiple
+                      className="hidden"
+                      onChange={handleImageChange}
+                    />
+                  </label>
+                )}
+              </div>
             </div>
           </div>
 

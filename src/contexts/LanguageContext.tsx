@@ -1,4 +1,4 @@
-import React, { createContext, useContext, useState, ReactNode } from 'react';
+import React, { createContext, useContext, useState, ReactNode, useEffect } from 'react';
 import { languages } from '@/data/indianStates';
 import { supabase } from '@/integrations/supabase/client';
 
@@ -24,23 +24,32 @@ interface LanguageProviderProps {
 }
 
 export const LanguageProvider: React.FC<LanguageProviderProps> = ({ children }) => {
-  const [currentLanguage, setCurrentLanguage] = useState('en');
+  const [currentLanguage, setCurrentLanguage] = useState<string>(() => {
+    if (typeof window === 'undefined') return 'en';
+    return localStorage.getItem('krishilink:lang') || 'en';
+  });
+
+  useEffect(() => {
+    try { localStorage.setItem('krishilink:lang', currentLanguage); } catch {}
+  }, [currentLanguage]);
 
   const translate = async (text: string): Promise<string> => {
     if (currentLanguage === 'en') return text;
 
     try {
-      const targetLanguage =
-        languages.find((l) => l.code === currentLanguage)?.name || 'Hindi';
-
-      const { data, error } = await supabase.functions.invoke('ai', {
-        body: { mode: 'translate', text, targetLanguage },
+      const { data, error } = await supabase.functions.invoke('bhashini-transliterate', {
+        body: {
+          text,
+          sourceLanguage: 'en',
+          targetLanguage: currentLanguage,
+          isSentence: true,
+          numSuggestions: 1,
+        },
       });
-
       if (error) throw error;
-      return (data as any)?.content || text;
+      return (data as any)?.output || text;
     } catch (error) {
-      console.error('Translation error:', error);
+      console.error('Transliteration error:', error);
       return text;
     }
   };

@@ -2,7 +2,6 @@ import React, { useEffect, useState } from 'react';
 import { useLocation, useNavigate } from 'react-router-dom';
 import { useAuth } from '@/contexts/AuthContext';
 import Logo from './Logo';
-import LanguageSelector from './LanguageSelector';
 import { Button } from '@/components/ui/button';
 import { Menu, X, LogOut, LayoutDashboard } from 'lucide-react';
 import RegisterModal from './auth/RegisterModal';
@@ -61,7 +60,6 @@ const Header: React.FC = () => {
 
             {/* Desktop Actions */}
             <div className="hidden md:flex items-center gap-3">
-              <LanguageSelector />
               {user ? (
                 <>
                   <Button variant="ghost" onClick={() => navigate('/dashboard')}>
@@ -114,7 +112,6 @@ const Header: React.FC = () => {
                 </nav>
               )}
               <div className="pt-4 border-t border-border space-y-2">
-                <LanguageSelector />
                 {user ? (
                   <>
                     <Button className="w-full" onClick={() => { navigate('/dashboard'); setMobileMenuOpen(false); }}>

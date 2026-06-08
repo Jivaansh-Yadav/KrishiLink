@@ -3,6 +3,7 @@ import { useNavigate } from 'react-router-dom';
 import { supabase } from '@/integrations/supabase/client';
 import { useToast } from '@/hooks/use-toast';
 import { indianStates } from '@/data/indianStates';
+import { stateDistricts } from '@/data/districts';
 import {
   Dialog,
   DialogContent,
@@ -270,7 +271,7 @@ const RegisterModal: React.FC<RegisterModalProps> = ({ open, onOpenChange, onSwi
             <div className="grid grid-cols-2 gap-4">
               <div className="space-y-2">
                 <Label htmlFor="state">State *</Label>
-                <Select value={formData.state} onValueChange={(value) => setFormData(prev => ({ ...prev, state: value }))}>
+                <Select value={formData.state} onValueChange={(value) => setFormData(prev => ({ ...prev, state: value, district: '' }))}>
                   <SelectTrigger>
                     <SelectValue placeholder="Select state" />
                   </SelectTrigger>
@@ -285,12 +286,20 @@ const RegisterModal: React.FC<RegisterModalProps> = ({ open, onOpenChange, onSwi
               </div>
               <div className="space-y-2">
                 <Label htmlFor="district">District *</Label>
-                <Input
-                  id="district"
+                <Select
                   value={formData.district}
-                  onChange={(e) => setFormData(prev => ({ ...prev, district: e.target.value }))}
-                  required
-                />
+                  onValueChange={(value) => setFormData(prev => ({ ...prev, district: value }))}
+                  disabled={!formData.state}
+                >
+                  <SelectTrigger>
+                    <SelectValue placeholder={formData.state ? 'Select district' : 'Select state first'} />
+                  </SelectTrigger>
+                  <SelectContent className="max-h-60">
+                    {(stateDistricts[formData.state] || []).map((d) => (
+                      <SelectItem key={d} value={d}>{d}</SelectItem>
+                    ))}
+                  </SelectContent>
+                </Select>
               </div>
             </div>
 
