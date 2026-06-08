@@ -1,8 +1,8 @@
-import React from 'react';
+import React, { useState } from 'react';
 import { Card, CardContent, CardFooter } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
-import { MapPin, Calendar, Phone, Mail, Wheat, IndianRupee, Info } from 'lucide-react';
+import { MapPin, Calendar, Phone, Mail, Wheat, IndianRupee, Info, Pencil, ChevronLeft, ChevronRight } from 'lucide-react';
 import { WhatsAppIcon } from './icons/WhatsAppIcon';
 
 interface CropCardProps {
@@ -18,6 +18,7 @@ interface CropCardProps {
     location?: string;
     state?: string;
     image_url?: string;
+    image_urls?: string[];
     status: string;
     farmer?: {
       full_name: string;
@@ -30,9 +31,15 @@ interface CropCardProps {
   onContact?: () => void;
   onWhatsApp?: () => void;
   onViewFarmer?: () => void;
+  onEdit?: () => void;
 }
 
-export const CropCard: React.FC<CropCardProps> = ({ crop, showFarmerContact = false, onContact, onWhatsApp, onViewFarmer }) => {
+export const CropCard: React.FC<CropCardProps> = ({ crop, showFarmerContact = false, onContact, onWhatsApp, onViewFarmer, onEdit }) => {
+  const images = (crop.image_urls && crop.image_urls.length > 0)
+    ? crop.image_urls
+    : (crop.image_url ? [crop.image_url] : []);
+  const [imgIdx, setImgIdx] = useState(0);
+  const currentImg = images[imgIdx];
   const initials = (crop.crop_name || "Crop")
     .split(/\s+/)
     .filter(Boolean)
@@ -50,13 +57,38 @@ export const CropCard: React.FC<CropCardProps> = ({ crop, showFarmerContact = fa
   return (
     <Card className="overflow-hidden hover:shadow-lg transition-shadow">
       <div className="relative h-40">
-        {crop.image_url ? (
-          <img
-            src={crop.image_url}
-            alt={`${crop.crop_name} crop image`}
-            className="w-full h-full object-cover"
-            loading="lazy"
-          />
+        {currentImg ? (
+          <>
+            <img
+              src={currentImg}
+              alt={`${crop.crop_name} image ${imgIdx + 1}`}
+              className="w-full h-full object-cover"
+              loading="lazy"
+            />
+            {images.length > 1 && (
+              <>
+                <button
+                  type="button"
+                  onClick={(e) => { e.stopPropagation(); setImgIdx((i) => (i - 1 + images.length) % images.length); }}
+                  className="absolute left-1 top-1/2 -translate-y-1/2 bg-black/40 hover:bg-black/60 text-white rounded-full p-1"
+                  aria-label="Previous photo"
+                >
+                  <ChevronLeft className="h-4 w-4" />
+                </button>
+                <button
+                  type="button"
+                  onClick={(e) => { e.stopPropagation(); setImgIdx((i) => (i + 1) % images.length); }}
+                  className="absolute right-1 top-1/2 -translate-y-1/2 bg-black/40 hover:bg-black/60 text-white rounded-full p-1"
+                  aria-label="Next photo"
+                >
+                  <ChevronRight className="h-4 w-4" />
+                </button>
+                <div className="absolute bottom-1 left-1/2 -translate-x-1/2 bg-black/50 text-white text-[10px] px-2 py-0.5 rounded-full">
+                  {imgIdx + 1}/{images.length}
+                </div>
+              </>
+            )}
+          </>
         ) : (
           <div className="w-full h-full bg-muted flex items-center justify-center">
             <div className="text-center">
@@ -69,6 +101,20 @@ export const CropCard: React.FC<CropCardProps> = ({ crop, showFarmerContact = fa
         <Badge className={`absolute top-2 right-2 ${statusClass}`}>
           {crop.status}
         </Badge>
+
+        {onEdit && (
+          <Button
+            type="button"
+            size="icon"
+            variant="secondary"
+            className="absolute top-2 left-2 h-8 w-8 shadow"
+            onClick={(e) => { e.stopPropagation(); onEdit(); }}
+            aria-label="Edit crop"
+            title="Edit crop"
+          >
+            <Pencil className="h-4 w-4" />
+          </Button>
+        )}
       </div>
       
       <CardContent className="p-4">
