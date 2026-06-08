@@ -69,7 +69,7 @@ const Index: React.FC = () => {
   };
 
   const features = [
-    { icon: Sprout, title: 'Crop Management', desc: 'Track your crops from planting to harvest with smart tools to manage your entire farming operation.' },
+    { icon: Sprout, title: 'KrishiBot AI Assistant', desc: 'Get answers, personalized farming advice, crop recommendations, and real-time solutions to improve farm yields.' },
     { icon: Cloud, title: 'Weather Forecast', desc: 'Get accurate local weather predictions to plan your farming activities and protect your harvest.' },
     { icon: ShoppingCart, title: 'Direct Marketplace', desc: 'Sell directly to buyers at fair prices, eliminating middlemen and increasing your profits.' },
     { icon: Bug, title: 'Crop Health Analysis', desc: 'AI-powered disease detection and expert recommendations to keep your crops healthy and thriving.' },
@@ -94,7 +94,7 @@ const Index: React.FC = () => {
         <div className="container mx-auto px-4 pt-24 pb-32 relative z-10">
           <div className="text-center max-w-4xl mx-auto">
             <div className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-primary-foreground/10 border border-primary-foreground/20 mb-6 animate-fade-in">
-              <span className="w-2 h-2 rounded-full bg-yellow-400" />
+              
               <span className="text-sm text-primary-foreground">Bridging Agriculture & Technology for a Stronger India</span>
             </div>
             
@@ -239,7 +239,7 @@ const Index: React.FC = () => {
                     </div>
                     <div>
                       <p className="text-sm text-muted-foreground">Email</p>
-                      <p className="font-medium">support@krishilink.com</p>
+                      <p className="font-medium">jivaanshyadav@gmail.com</p>
                     </div>
                   </a>
                   
@@ -249,7 +249,7 @@ const Index: React.FC = () => {
                     </div>
                     <div>
                       <p className="text-sm text-muted-foreground">Phone</p>
-                      <p className="font-medium">+91 123 456 7890</p>
+                      <p className="font-medium">+91 12345 67890</p>
                     </div>
                   </a>
                   
@@ -259,8 +259,8 @@ const Index: React.FC = () => {
                     </div>
                     <div>
                       <p className="text-sm text-muted-foreground">Address</p>
-                      <p className="font-medium">KrishiLink HQ, Tech Park</p>
-                      <p className="text-sm text-muted-foreground">Bangalore, Karnataka 560001</p>
+                      <p className="font-medium">KrishiLink</p>
+                      <p className="text-sm text-muted-foreground">India</p>
                     </div>
                   </div>
                 </div>

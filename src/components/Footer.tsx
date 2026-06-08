@@ -32,10 +32,9 @@ const Footer: React.FC = () => {
   };
 
   const contactOptions = [
-    { icon: Mail, label: 'Email', value: 'support@krishilink.com', href: 'mailto:support@krishilink.com' },
-    { icon: Phone, label: 'Mobile', value: '+91 1800-123-4567', href: 'tel:+911800123567' },
-    { icon: MessageCircle, label: 'WhatsApp', value: '+91 98765 43210', href: 'https://wa.me/919876543210' },
-    { icon: Phone, label: 'Telephone', value: '1800-180-1551', href: 'tel:18001801551' },
+    { icon: Mail, label: 'Email', value: 'jivaanshyadav@gmail.com', href: 'mailto:jivaanshyadav@gmail.com' },
+    { icon: Phone, label: 'Mobile', value: '+91 12345 67890', href: 'tel:+911234567890' },
+    { icon: MessageCircle, label: 'WhatsApp', value: '+91 12345 67890', href: 'https://wa.me/911234567890' },
   ];
 
   const socialLinks = [
@@ -65,7 +64,7 @@ const Footer: React.FC = () => {
               </p>
               <div className="flex items-center gap-1 text-primary-foreground/70 text-sm">
                 <MapPin className="w-4 h-4" />
-                <span>KrishiLink HQ, New Delhi, India</span>
+                <span>KrishiLink, India</span>
               </div>
             </div>
 
@@ -118,7 +117,7 @@ const Footer: React.FC = () => {
           </div>
 
           {/* Bottom Bar */}
-          <div className="mt-12 pt-8 border-t border-primary-foreground/20 text-center">
+          <div className="mt-5 pt-5 border-t border-primary-foreground/20 text-center">
             <p className="text-sm text-primary-foreground/70">
               Made with <Heart className="w-4 h-4 inline-block text-red-400 fill-current" /> for farmers | Developed by <span className="font-semibold">Jivaansh</span>
             </p>

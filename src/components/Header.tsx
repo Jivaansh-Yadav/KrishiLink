@@ -30,22 +30,23 @@ const Header: React.FC = () => {
   };
 
   const navLinks = [
-    { href: '#about', label: 'About' },
     { href: '#features', label: 'Features' },
+    { href: '#about', label: 'About' },
     { href: '#contact', label: 'Contact' },
+    { href: '#support', label: 'Support' },
   ];
 
   return (
     <>
       <header className="fixed top-0 left-0 right-0 z-50 glass-effect">
         <div className="container mx-auto px-4">
-          <div className="flex items-center justify-between h-16 md:h-20">
+          <div className="relative flex items-center justify-between h-16 md:h-20">
             {/* Logo */}
             <Logo />
 
             {/* Desktop Navigation */}
             {showMarketingNav && (
-              <nav className="hidden lg:flex items-center gap-6">
+              <nav className="hidden lg:flex absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 items-center gap-10">
                 {navLinks.map((link) => (
                   <a
                     key={link.href}

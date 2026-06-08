@@ -209,12 +209,12 @@ const LoginModal: React.FC<LoginModalProps> = ({ open, onOpenChange, onSwitchToR
         ) : (
           <form onSubmit={handleLogin} className="space-y-4">
             <div className="space-y-2">
-              <Label htmlFor="identifier">Username / Email / Mobile</Label>
+              <Label htmlFor="identifier">Email</Label>
               <Input
                 id="identifier"
                 value={formData.identifier}
                 onChange={(e) => setFormData(prev => ({ ...prev, identifier: e.target.value }))}
-                placeholder="Enter username, email, or mobile"
+                placeholder="Enter email address"
                 required
               />
             </div>
@@ -227,6 +227,7 @@ const LoginModal: React.FC<LoginModalProps> = ({ open, onOpenChange, onSwitchToR
                   type={showPassword ? 'text' : 'password'}
                   value={formData.password}
                   onChange={(e) => setFormData(prev => ({ ...prev, password: e.target.value }))}
+                  placeholder="Enter password"
                   required
                 />
                 <button
