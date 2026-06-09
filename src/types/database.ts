@@ -68,9 +68,10 @@ export interface Database {
           user_id: string
           crop_name: string
           crop_type: string | null
-          quantity_kg: number
-          price_per_kg: number
+          quantity_quintal: number
+          price_per_quintal: number
           photo_url: string | null
+          photo_urls: string[]
           created_at: string
           updated_at: string
         }
@@ -79,9 +80,10 @@ export interface Database {
           user_id: string
           crop_name: string
           crop_type?: string | null
-          quantity_kg: number
-          price_per_kg: number
+          quantity_quintal: number
+          price_per_quintal: number
           photo_url?: string | null
+          photo_urls?: string[]
           created_at?: string
           updated_at?: string
         }
@@ -90,9 +92,10 @@ export interface Database {
           user_id?: string
           crop_name?: string
           crop_type?: string | null
-          quantity_kg?: number
-          price_per_kg?: number
+          quantity_quintal?: number
+          price_per_quintal?: number
           photo_url?: string | null
+          photo_urls?: string[]
           created_at?: string
           updated_at?: string
         }

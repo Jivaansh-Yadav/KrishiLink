@@ -10,9 +10,9 @@ interface CropCardProps {
     id: string;
     crop_name: string;
     crop_type: string;
-    quantity: number;
+    quantity?: number | null;
     unit: string;
-    price_per_unit: number;
+    price_per_unit?: number | null;
     description?: string;
     harvest_date?: string;
     location?: string;
@@ -39,6 +39,12 @@ export const CropCard: React.FC<CropCardProps> = ({ crop, showFarmerContact = fa
     : (crop.image_url ? [crop.image_url] : []);
   const [imgIdx, setImgIdx] = useState(0);
   const currentImg = images[imgIdx];
+  const pricePerUnit = typeof crop.price_per_unit === 'number' && Number.isFinite(crop.price_per_unit)
+    ? crop.price_per_unit
+    : null;
+  const quantity = typeof crop.quantity === 'number' && Number.isFinite(crop.quantity)
+    ? crop.quantity
+    : null;
   const initials = (crop.crop_name || "Crop")
     .split(/\s+/)
     .filter(Boolean)
@@ -119,7 +125,7 @@ export const CropCard: React.FC<CropCardProps> = ({ crop, showFarmerContact = fa
           <div className="text-right">
             <div className="flex items-center text-primary font-bold text-lg">
               <IndianRupee className="h-4 w-4" />
-              {crop.price_per_unit.toLocaleString('en-IN')}
+              {pricePerUnit !== null ? pricePerUnit.toLocaleString('en-IN') : 'Price unavailable'}
             </div>
             <span className="text-xs text-muted-foreground">per {crop.unit}</span>
           </div>
@@ -128,7 +134,7 @@ export const CropCard: React.FC<CropCardProps> = ({ crop, showFarmerContact = fa
         <div className="space-y-2 text-sm">
           <div className="flex items-center gap-2 text-muted-foreground">
             <span className="font-medium">Qty:</span>
-            <span>{crop.quantity} {crop.unit}</span>
+            <span>{quantity !== null ? `${quantity} ${crop.unit}` : 'Quantity unavailable'}</span>
           </div>
           
           {(crop.location || crop.state) && (
