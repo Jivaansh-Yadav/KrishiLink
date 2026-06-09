@@ -22,8 +22,8 @@ export type Database = {
           id: string
           photo_url: string | null
           photo_urls: string[]
-          price_per_kg: number
-          quantity_kg: number
+          price_per_quintal: number
+          quantity_quintal: number
           updated_at: string | null
           user_id: string
         }
@@ -34,8 +34,8 @@ export type Database = {
           id?: string
           photo_url?: string | null
           photo_urls?: string[]
-          price_per_kg: number
-          quantity_kg: number
+          price_per_quintal: number
+          quantity_quintal: number
           updated_at?: string | null
           user_id: string
         }
@@ -46,8 +46,8 @@ export type Database = {
           id?: string
           photo_url?: string | null
           photo_urls?: string[]
-          price_per_kg?: number
-          quantity_kg?: number
+          price_per_quintal?: number
+          quantity_quintal?: number
           updated_at?: string | null
           user_id?: string
         }

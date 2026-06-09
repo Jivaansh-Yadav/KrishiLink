@@ -25,13 +25,33 @@ import { toast } from 'sonner';
 import { cropTypes } from '@/data/indianStates';
 import { UserDetailModal, UserDetail } from '@/components/UserDetailModal';
 
+
+type CropRowWithFarmer = {
+  id: string;
+  crop_name: string;
+  crop_type?: string | null;
+  quantity_quintal?: number | null;
+  price_per_quintal?: number | null;
+  quantity_kg?: number | null;
+  price_per_kg?: number | null;
+  photo_url?: string | null;
+  photo_urls?: string[] | null;
+  users?: (UserDetail & {
+    first_name: string;
+    last_name?: string | null;
+    mobile_number?: string | null;
+    whatsapp_number?: string | null;
+    email?: string | null;
+  }) | null;
+};
+
 interface CropWithFarmer {
   id: string;
   crop_name: string;
   crop_type: string;
-  quantity: number;
+  quantity: number | null;
   unit: string;
-  price_per_unit: number;
+  price_per_unit: number | null;
   description?: string;
   harvest_date?: string;
   location?: string;
@@ -108,24 +128,34 @@ const BuyerDashboard: React.FC = () => {
 
       if (error) throw error;
       
-      // Map DB fields to component fields
-      const mappedCrops = (data || []).map(c => ({
-        id: c.id,
-        crop_name: c.crop_name,
-        crop_type: c.crop_type || 'Other',
-        quantity: c.quantity_kg,
-        unit: 'kg',
-        price_per_unit: c.price_per_kg,
-        image_url: c.photo_url,
-        image_urls: (c as any).photo_urls || (c.photo_url ? [c.photo_url] : []),
-        farmer: c.users ? {
-          full_name: `${c.users.first_name} ${c.users.last_name || ''}`.trim(),
-          phone: c.users.mobile_number,
-          whatsapp: c.users.whatsapp_number,
-          email: c.users.email,
-        } : undefined,
-        farmer_detail: c.users ? (c.users as UserDetail) : undefined,
-      }));
+      // Map DB fields to component fields. The crops table now stores quintal values;
+      // keep kg fallbacks only so older local/dev databases do not crash the card renderer.
+      const mappedCrops = (data || []).map(c => {
+        const cropRow = c as CropRowWithFarmer;
+        const quantity = cropRow.quantity_quintal ?? cropRow.quantity_kg ?? null;
+        const pricePerUnit = cropRow.price_per_quintal ?? cropRow.price_per_kg ?? null;
+        const imageUrls = Array.isArray(cropRow.photo_urls) && cropRow.photo_urls.length > 0
+          ? cropRow.photo_urls
+          : (cropRow.photo_url ? [cropRow.photo_url] : []);
+
+        return {
+          id: cropRow.id,
+          crop_name: cropRow.crop_name,
+          crop_type: cropRow.crop_type || 'Other',
+          quantity,
+          unit: cropRow.quantity_quintal !== undefined || cropRow.price_per_quintal !== undefined ? 'Quintal' : 'kg',
+          price_per_unit: pricePerUnit,
+          image_url: cropRow.photo_url,
+          image_urls: imageUrls,
+          farmer: cropRow.users ? {
+            full_name: `${cropRow.users.first_name} ${cropRow.users.last_name || ''}`.trim(),
+            phone: cropRow.users.mobile_number,
+            whatsapp: cropRow.users.whatsapp_number,
+            email: cropRow.users.email,
+          } : undefined,
+          farmer_detail: cropRow.users ? (cropRow.users as UserDetail) : undefined,
+        };
+      });
       setCrops(mappedCrops);
     } catch (error: unknown) {
       console.error('Fetch crops error:', error);
