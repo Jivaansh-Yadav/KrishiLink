@@ -44,7 +44,7 @@ export const EditCropModal: React.FC<EditCropModalProps> = ({ open, onOpenChange
     cropName: '',
     cropType: '',
     quantity: '',
-    pricePerKg: '',
+    pricePerQuintal: '',
   });
 
   useEffect(() => {
@@ -53,7 +53,7 @@ export const EditCropModal: React.FC<EditCropModalProps> = ({ open, onOpenChange
         cropName: crop.crop_name || '',
         cropType: crop.crop_type || '',
         quantity: String(crop.quantity ?? ''),
-        pricePerKg: String(crop.price_per_unit ?? ''),
+        pricePerQuintal: String(crop.price_per_unit ?? ''),
       });
       setExistingUrls(crop.image_urls && crop.image_urls.length ? crop.image_urls : (crop.image_url ? [crop.image_url] : []));
       setNewFiles([]);
@@ -112,8 +112,8 @@ export const EditCropModal: React.FC<EditCropModalProps> = ({ open, onOpenChange
         .update({
           crop_name: formData.cropName,
           crop_type: formData.cropType || 'Other',
-          quantity_kg: parseFloat(formData.quantity),
-          price_per_kg: parseFloat(formData.pricePerKg),
+          quantity_quintal: parseFloat(formData.quantity),
+          price_per_quintal: parseFloat(formData.pricePerQuintal),
           photo_url: allUrls[0] || null,
           photo_urls: allUrls,
         } as any)
@@ -215,12 +215,12 @@ export const EditCropModal: React.FC<EditCropModalProps> = ({ open, onOpenChange
 
           <div className="grid grid-cols-2 gap-4">
             <div>
-              <Label>Quantity (kg) *</Label>
+              <Label>Quantity (Quintal) *</Label>
               <Input type="number" min="0" step="0.01" value={formData.quantity} onChange={(e) => setFormData({ ...formData, quantity: e.target.value })} required />
             </div>
             <div>
-              <Label>Price per kg (₹) *</Label>
-              <Input type="number" min="0" step="0.01" value={formData.pricePerKg} onChange={(e) => setFormData({ ...formData, pricePerKg: e.target.value })} required />
+              <Label>Price per Quintal (₹) *</Label>
+              <Input type="number" min="0" step="0.01" value={formData.pricePerQuintal} onChange={(e) => setFormData({ ...formData, pricePerQuintal: e.target.value })} required />
             </div>
           </div>
 

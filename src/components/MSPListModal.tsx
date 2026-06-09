@@ -27,11 +27,11 @@ export const MSPListModal: React.FC<MSPListModalProps> = ({ open, onOpenChange }
 
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
-      <DialogContent className="max-w-2xl max-h-[80vh] overflow-hidden flex flex-col">
+      <DialogContent className="max-w-[35rem] max-h-[38rem] overflow-hidden flex flex-col">
         <DialogHeader>
           <DialogTitle className="flex items-center gap-2">
             <IndianRupee className="h-5 w-5 text-primary" />
-            Minimum Support Prices (MSP) 2025-26
+            Minimum Support Prices (MSP) 2024-25
           </DialogTitle>
         </DialogHeader>
 

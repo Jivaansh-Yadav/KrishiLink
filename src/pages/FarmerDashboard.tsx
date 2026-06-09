@@ -87,9 +87,9 @@ const FarmerDashboard: React.FC = () => {
         id: c.id,
         crop_name: c.crop_name,
         crop_type: c.crop_type || 'Crop',
-        quantity: c.quantity_kg,
-        unit: 'kg',
-        price_per_unit: c.price_per_kg,
+        quantity: c.quantity_quintal,
+        unit: 'Quintal',
+        price_per_unit: c.price_per_quintal,
         image_url: c.photo_url,
         image_urls: (c as any).photo_urls || (c.photo_url ? [c.photo_url] : []),
       }));
@@ -207,32 +207,32 @@ const FarmerDashboard: React.FC = () => {
                   className="h-auto py-4 flex-col gap-2"
                   onClick={() => setShowMSP(true)}
                 >
-                  <IndianRupee className="h-5 w-5 text-primary" />
-                  <span className="text-xs">MSP List</span>
+                  <IndianRupee className="h-10 w-10 text-primary" />
+                  <span className="text-s">MSP List</span>
                 </Button>
                 <Button 
                   variant="outline" 
                   className="h-auto py-4 flex-col gap-2"
                   onClick={() => setShowDisease(true)}
                 >
-                  <Bug className="h-5 w-5 text-orange-500" />
-                  <span className="text-xs">Disease Check</span>
+                  <Bug className="h-10 w-10 text-orange-500" />
+                  <span className="text-s">Disease Check</span>
                 </Button>
                 <Button 
                   variant="outline" 
                   className="h-auto py-4 flex-col gap-2"
                   onClick={() => setShowAIChat(true)}
                 >
-                  <MessageSquare className="h-5 w-5 text-blue-500" />
-                  <span className="text-xs">AI Assistant</span>
+                  <MessageSquare className="h-10 w-10a text-blue-500" />
+                  <span className="text-s">AI Assistant</span>
                 </Button>
                 <Button 
                   variant="outline" 
                   className="h-auto py-4 flex-col gap-2"
                   onClick={() => setShowFindBuyers(true)}
                 >
-                  <Users className="h-5 w-5 text-green-500" />
-                  <span className="text-xs">Find Buyers</span>
+                  <Users className="h-10 w-10 text-green-500" />
+                  <span className="text-s">Find Buyers</span>
                 </Button>
               </CardContent>
             </Card>

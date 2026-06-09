@@ -43,7 +43,7 @@ export const AddCropModal: React.FC<AddCropModalProps> = ({ open, onOpenChange, 
     cropName: '',
     cropType: '',
     quantity: '',
-    pricePerKg: '',
+    pricePerQuintal: '',
     description: '',
   });
 
@@ -84,7 +84,7 @@ export const AddCropModal: React.FC<AddCropModalProps> = ({ open, onOpenChange, 
       return;
     }
 
-    if (!formData.cropName || !formData.quantity || !formData.pricePerKg) {
+    if (!formData.cropName || !formData.quantity || !formData.pricePerQuintal) {
       toast.error('Please fill all required fields');
       return;
     }
@@ -112,8 +112,8 @@ export const AddCropModal: React.FC<AddCropModalProps> = ({ open, onOpenChange, 
         user_id: user.id,
         crop_name: formData.cropName,
         crop_type: formData.cropType || 'Other',
-        quantity_kg: parseFloat(formData.quantity),
-        price_per_kg: parseFloat(formData.pricePerKg),
+        quantity_quintal: parseFloat(formData.quantity),
+        price_per_quintal: parseFloat(formData.pricePerQuintal),
         photo_url: photoUrls[0] || null,
         photo_urls: photoUrls,
       } as any);
@@ -129,7 +129,7 @@ export const AddCropModal: React.FC<AddCropModalProps> = ({ open, onOpenChange, 
         cropName: '',
         cropType: '',
         quantity: '',
-        pricePerKg: '',
+        pricePerQuintal: '',
         description: '',
       });
       setImageFiles([]);
@@ -144,7 +144,7 @@ export const AddCropModal: React.FC<AddCropModalProps> = ({ open, onOpenChange, 
 
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
-      <DialogContent className="max-w-lg max-h-[85vh] overflow-y-auto">
+      <DialogContent className="max-w-[35rem] max-h-[50rem] overflow-y-auto">
         <DialogHeader>
           <DialogTitle className="flex items-center gap-2">
             <Plus className="h-5 w-5 text-primary" />
@@ -219,7 +219,7 @@ export const AddCropModal: React.FC<AddCropModalProps> = ({ open, onOpenChange, 
 
             <div className="grid grid-cols-2 gap-4">
               <div>
-                <Label htmlFor="quantity">Quantity (kg) *</Label>
+                <Label htmlFor="quantity">Quantity (Quintal) *</Label>
                 <Input
                   id="quantity"
                   type="number"
@@ -233,7 +233,7 @@ export const AddCropModal: React.FC<AddCropModalProps> = ({ open, onOpenChange, 
               </div>
               <div>
                 <div className="flex items-center justify-between">
-                  <Label htmlFor="price">Price per kg (₹) *</Label>
+                  <Label htmlFor="price">Price per Quintal (₹) *</Label>
                   <Button
                     type="button"
                     variant="link"
@@ -249,8 +249,8 @@ export const AddCropModal: React.FC<AddCropModalProps> = ({ open, onOpenChange, 
                   type="number"
                   min="0"
                   step="0.01"
-                  value={formData.pricePerKg}
-                  onChange={(e) => setFormData({ ...formData, pricePerKg: e.target.value })}
+                  value={formData.pricePerQuintal}
+                  onChange={(e) => setFormData({ ...formData, pricePerQuintal: e.target.value })}
                   placeholder="50"
                   required
                 />
