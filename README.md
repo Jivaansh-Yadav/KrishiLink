@@ -1,11 +1,24 @@
 # 🌱 KrishiLink
+
+[![React](https://img.shields.io/badge/React-18-61DAFB?style=flat&logo=react&logoColor=white&labelColor=20232A)](https://react.dev)
+[![TypeScript](https://img.shields.io/badge/TypeScript-latest-3178C6?style=flat&logo=typescript&logoColor=white)](https://www.typescriptlang.org)
+[![Vite](https://img.shields.io/badge/Vite-latest-646CFF?style=flat&logo=vite&logoColor=white)](https://vitejs.dev)
+[![shadcn/ui](https://img.shields.io/badge/shadcn%2Fui-latest-000000?style=flat)](https://ui.shadcn.com)
+[![Tailwind CSS](https://img.shields.io/badge/Tailwind_CSS-latest-06B6D4?style=flat&logo=tailwindcss&logoColor=white)](https://tailwindcss.com)
+[![React Router](https://img.shields.io/badge/React_Router-v6-CA4245?style=flat&logo=reactrouter&logoColor=white)](https://reactrouter.com)
+[![TanStack Query](https://img.shields.io/badge/TanStack_Query-v5-FF4154?style=flat&logo=reactquery&logoColor=white)](https://tanstack.com/query)
+[![React Hook Form](https://img.shields.io/badge/React_Hook_Form-latest-EC5990?style=flat&logo=reacthookform&logoColor=white)](https://react-hook-form.com)
+[![Zod](https://img.shields.io/badge/Zod-latest-3E67B1?style=flat)](https://zod.dev)
+[![Supabase](https://img.shields.io/badge/Supabase-latest-3ECF8E?style=flat&logo=supabase&logoColor=white)](https://supabase.com)
+[![Recharts](https://img.shields.io/badge/Recharts-latest-22B5BF?style=flat)](https://recharts.org)
+
 <blockquote>
   <i><b>Bridging Agriculture & Technology for a Stronger India</b></i>
 </blockquote>
 
 KrishiLink is a digital platform that helps farmers access fair prices, expert guidance, weather updates, and connects them directly to buyers — eliminating middlemen.
 
-Built for the [*hands that feed the nation*](## "Indian farmers") with the hope of a better India.
+Built for the <abbr title="Indian Farmers">*hands that feed the nation*</abbr> with the hope of a better India.
 
 # 🌐 The Prototype
 <i><b>https://krishilink.pages.dev/</b></i>
@@ -56,12 +69,12 @@ AI-powered disease detection and expert recommendations to keep crops healthy an
 - **Icons**: Lucide React
 - **Development & Scaffolding**: Lovable (AI-powered web app builder)
 
-# 🚀 Aims for the Future
+# 🚀 Future Aims
 - Expand the website on a larger-scale
 - Increase awareness among target users
 - Increase efforts to expand reach for platform growth
 
 <br>
 <div align="center">
-  <sub>Built with ❤️ by <a href="https://github.com/Jivaansh-Yadav">Jivaansh</a></sub>
+  <sub>Built with ❤️ by <a href="https://github.com/Jivaansh-Yadav">Jivaansh</a> & <a href="https://github.com/an-Aetheria">Aetheria</a></sub>
 </div>
