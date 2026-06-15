@@ -7,66 +7,64 @@ import { stateDistricts } from '@/data/districts';
 import { WeatherDetailModal } from './WeatherDetailModal';
 
 interface WeatherData {
-  location: { name: string; region: string };
+  location: { name: string; region?: string; lat?: number; lon?: number };
   current: {
     temp_c: number;
     condition: { text: string; icon: string };
     humidity: number;
     wind_kph: number;
     feelslike_c: number;
+    uv?: number;
+    precip_mm?: number;
   };
   astronomical?: any;
   forecast?: any[];
   rainfall?: any;
+  agronomy?: any;
 }
 
 interface WeatherCardProps {
   location?: string;
-  locationRaw?: string;
 }
 
-const normalizeCity = (value: string) =>
-  value
-    .trim()
-    .toLowerCase()
-    .replace(/&amp;/g, '&')
-    .replace(/_/g, ' ')
-    .replace(/\s*[-]\s*/g, ' ')
-    .replace(/\s+/g, ' ')
-    .replace(/\s*\(\s*/g, ' (')
-    .replace(/\s*\)\s*/g, ')');
+// Delhi fallback
+const FALLBACK = { name: 'Delhi', lat: 28.6139, lon: 77.209 };
 
-const getRawLocation = (formatted: string) => {
-  const normalizedFormatted = normalizeCity(formatted);
-  if (!normalizedFormatted) return formatted;
-
-  for (const rawCities of Object.values(stateDistricts)) {
-    for (const rawCity of rawCities) {
-      const cityName = typeof rawCity === 'string' ? rawCity : rawCity?.name;
-      if (typeof cityName === 'string' && normalizeCity(cityName) === normalizedFormatted) {
-        return cityName;
+const findCoords = (cityOrState?: string) => {
+  if (!cityOrState) return FALLBACK;
+  const q = cityOrState.trim().toLowerCase();
+  for (const districts of Object.values(stateDistricts)) {
+    for (const d of districts) {
+      if (typeof d === 'object' && d?.name && d.lat != null && d.lon != null
+          && d.name.toLowerCase() === q) {
+        return { name: d.name, lat: d.lat as number, lon: d.lon as number };
       }
     }
   }
-
-  return formatted;
+  // try state name → use first district with coords
+  const stateKey = Object.keys(stateDistricts).find(s => s.toLowerCase() === q);
+  if (stateKey) {
+    const first = stateDistricts[stateKey].find(d => d.lat != null && d.lon != null);
+    if (first) return { name: stateKey, lat: first.lat as number, lon: first.lon as number };
+  }
+  return FALLBACK;
 };
 
-export const WeatherCard: React.FC<WeatherCardProps> = ({ location = 'Delhi', locationRaw }) => {
+export const WeatherCard: React.FC<WeatherCardProps> = ({ location = 'Delhi' }) => {
   const [weather, setWeather] = useState<WeatherData | null>(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
   const [showDetail, setShowDetail] = useState(false);
   const [refreshing, setRefreshing] = useState(false);
 
-  const rawLocation = locationRaw || getRawLocation(location);
+  const coords = findCoords(location);
 
   const fetchWeather = async () => {
     try {
       setLoading(true);
       setRefreshing(true);
       const { data, error } = await supabase.functions.invoke('weather', {
-        body: { location: rawLocation },
+        body: { lat: coords.lat, lon: coords.lon, name: coords.name },
       });
 
       if (error) throw error;
@@ -84,7 +82,7 @@ export const WeatherCard: React.FC<WeatherCardProps> = ({ location = 'Delhi', lo
 
   useEffect(() => {
     fetchWeather();
-  }, [rawLocation]);
+  }, [coords.lat, coords.lon]);
 
   const getWeatherIcon = (condition: string) => {
     const lowerCondition = condition.toLowerCase();
@@ -123,7 +121,7 @@ export const WeatherCard: React.FC<WeatherCardProps> = ({ location = 'Delhi', lo
       <CardHeader className="pb-2 flex flex-row items-center justify-between space-y-0">
         <CardTitle className="text-lg flex items-center gap-2">
           <Cloud className="h-5 w-5" />
-          Weather in {location}
+          Weather in {coords.name}
         </CardTitle>
         <Button
           variant="ghost"
