@@ -22,13 +22,10 @@ import { supabase } from '@/integrations/supabase/client';
 import { toast } from 'sonner';
 import { stateNames } from '@/data/indianStates';
 import { stateDistricts } from '@/data/districts';
-import { useLanguage } from '@/contexts/LanguageContext';
-import { Globe } from 'lucide-react';
 
 const Profile: React.FC = () => {
   const navigate = useNavigate();
   const { user, profile, loading: authLoading, refreshProfile } = useAuth();
-  const { currentLanguage, setLanguage, languages } = useLanguage();
   
   const [saving, setSaving] = useState(false);
   const [uploadingImage, setUploadingImage] = useState(false);
