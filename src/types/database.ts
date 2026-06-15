@@ -17,7 +17,7 @@ export interface Database {
           mobile_number: string
           email: string
           state: string
-          city: string
+          district: string
           village: string | null
           postal_code: string | null
           role: 'farmer' | 'buyer' | 'admin'
@@ -34,7 +34,7 @@ export interface Database {
           mobile_number: string
           email: string
           state: string
-          city: string
+          district: string
           village?: string | null
           postal_code?: string | null
           role: 'farmer' | 'buyer' | 'admin'
@@ -51,7 +51,7 @@ export interface Database {
           mobile_number?: string
           email?: string
           state?: string
-          city?: string
+          district?: string
           village?: string | null
           postal_code?: string | null
           role?: 'farmer' | 'buyer' | 'admin'

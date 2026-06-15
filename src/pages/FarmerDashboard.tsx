@@ -114,7 +114,7 @@ const FarmerDashboard: React.FC = () => {
     return null;
   }
 
-  const location = profile?.city || profile?.state || 'Delhi';
+  const location = profile?.district || profile?.state || 'Delhi';
 
   return (
     <div className="min-h-screen flex flex-col bg-background">

@@ -21,7 +21,7 @@ export interface UserDetail {
   whatsapp_number?: string | null;
   email?: string | null;
   state?: string | null;
-  city?: string | null;
+  district?: string | null;
   village?: string | null;
   postal_code?: string | null;
   profile_photo?: string | null;
@@ -99,11 +99,11 @@ export const UserDetailModal: React.FC<Props> = ({ open, onOpenChange, user }) =
                 <Mail className="h-4 w-4" /> {user.email}
               </div>
             )}
-            {(user.village || user.city || user.state) && (
+            {(user.village || user.district || user.state) && (
               <div className="flex items-start gap-2 text-muted-foreground">
                 <MapPin className="h-4 w-4 mt-0.5" />
                 <span>
-                  {[user.village, user.city, user.state, user.postal_code].filter(Boolean).join(', ')}
+                  {[user.village, user.district, user.state, user.postal_code].filter(Boolean).join(', ')}
                 </span>
               </div>
             )}

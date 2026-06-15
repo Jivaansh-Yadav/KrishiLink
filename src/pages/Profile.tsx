@@ -38,7 +38,7 @@ const Profile: React.FC = () => {
     mobileNumber: '',
     whatsappNumber: '',
     state: '',
-    city: '',
+    district: '',
     village: '',
     postalCode: '',
   });
@@ -64,7 +64,7 @@ const Profile: React.FC = () => {
         mobileNumber: profile.mobile_number || '',
         whatsappNumber: (profile as any).whatsapp_number || '',
         state: profile.state || '',
-        city: profile.city || '',
+        district: profile.district || '',
         village: (profile as any).village || '',
         postalCode: (profile as any).postal_code || '',
       });
@@ -130,7 +130,7 @@ const Profile: React.FC = () => {
           whatsapp_number: formData.whatsappNumber || null,
           email: formData.email,
           state: formData.state,
-          city: formData.city,
+          district: formData.district,
           village: formData.village || null,
           postal_code: formData.postalCode || null,
         })
@@ -363,7 +363,7 @@ const Profile: React.FC = () => {
                   </Label>
                   <Select
                     value={formData.state}
-                    onValueChange={(value) => setFormData({ ...formData, state: value, city: '' })}
+                    onValueChange={(value) => setFormData({ ...formData, state: value, district: '' })}
                   >
                     <SelectTrigger>
                       <SelectValue placeholder="Select your state" />
@@ -376,14 +376,14 @@ const Profile: React.FC = () => {
                   </Select>
                 </div>
                 <div>
-                  <Label htmlFor="city">District</Label>
+                  <Label htmlFor="district">District</Label>
                   <Select
-                    value={formData.city}
-                    onValueChange={(value) => setFormData({ ...formData, city: value })}
+                    value={formData.district}
+                    onValueChange={(value) => setFormData({ ...formData, district: value })}
                     disabled={!formData.state}
                   >
                     <SelectTrigger>
-                      <SelectValue placeholder={formData.state ? 'Select city' : 'Select state first'} />
+                      <SelectValue placeholder={formData.state ? 'Select district' : 'Select state first'} />
                     </SelectTrigger>
                     <SelectContent className="max-h-60">
                       {(stateDistricts[formData.state] || []).map((d) => {

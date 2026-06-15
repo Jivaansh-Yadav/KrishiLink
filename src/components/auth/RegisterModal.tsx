@@ -42,7 +42,7 @@ const RegisterModal: React.FC<RegisterModalProps> = ({ open, onOpenChange, onSwi
     whatsappNumber: '',
     email: '',
     state: '',
-    city: '',
+    district: '',
     village: '',
     postalCode: '',
     role: '' as 'farmer' | 'buyer' | '',
@@ -100,7 +100,7 @@ const RegisterModal: React.FC<RegisterModalProps> = ({ open, onOpenChange, onSwi
             mobile_number: '+91' + formData.mobileNumber,
             whatsapp_number: formData.whatsappNumber ? '+91' + formData.whatsappNumber : null,
             state: formData.state,
-            city: formData.city,
+            district: formData.district,
             village: formData.village,
             postal_code: formData.postalCode,
             role: formData.role,
@@ -139,7 +139,7 @@ const RegisterModal: React.FC<RegisterModalProps> = ({ open, onOpenChange, onSwi
           whatsapp_number: formData.whatsappNumber ? '+91' + formData.whatsappNumber : null,
           email: formData.email,
           state: formData.state,
-          city: formData.city,
+          district: formData.district,
           village: formData.village || null,
           postal_code: formData.postalCode || null,
           role: formData.role as 'farmer' | 'buyer',
@@ -271,7 +271,7 @@ const RegisterModal: React.FC<RegisterModalProps> = ({ open, onOpenChange, onSwi
             <div className="grid grid-cols-2 gap-4">
               <div className="space-y-2">
                 <Label htmlFor="state">State *</Label>
-                <Select value={formData.state} onValueChange={(value) => setFormData(prev => ({ ...prev, state: value, city: '' }))}>
+                <Select value={formData.state} onValueChange={(value) => setFormData(prev => ({ ...prev, state: value, district: '' }))}>
                   <SelectTrigger>
                     <SelectValue placeholder="Select state" />
                   </SelectTrigger>
@@ -285,14 +285,14 @@ const RegisterModal: React.FC<RegisterModalProps> = ({ open, onOpenChange, onSwi
                 </Select>
               </div>
               <div className="space-y-2">
-                <Label htmlFor="city">District *</Label>
+                <Label htmlFor="district">District *</Label>
                 <Select
-                  value={formData.city}
-                  onValueChange={(value) => setFormData(prev => ({ ...prev, city: value }))}
+                  value={formData.district}
+                  onValueChange={(value) => setFormData(prev => ({ ...prev, district: value }))}
                   disabled={!formData.state}
                 >
                   <SelectTrigger>
-                    <SelectValue placeholder={formData.state ? 'Select city' : 'Select state first'} />
+                    <SelectValue placeholder={formData.state ? 'Select district' : 'Select state first'} />
                   </SelectTrigger>
                   <SelectContent className="max-h-60">
                     {(stateDistricts[formData.state] || []).map((d) => {
