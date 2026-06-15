@@ -1,5 +1,9 @@
 # 🌱 KrishiLink
 
+<blockquote>
+  <i><b>Bridging Agriculture & Technology for a Stronger India</b></i>
+</blockquote>
+
 [![React](https://img.shields.io/badge/React-18-61DAFB?style=flat&logo=react&logoColor=white&labelColor=20232A)](https://react.dev)
 [![TypeScript](https://img.shields.io/badge/TypeScript-latest-3178C6?style=flat&logo=typescript&logoColor=white)](https://www.typescriptlang.org)
 [![Vite](https://img.shields.io/badge/Vite-latest-646CFF?style=flat&logo=vite&logoColor=white)](https://vitejs.dev)
@@ -12,9 +16,6 @@
 [![Supabase](https://img.shields.io/badge/Supabase-latest-3ECF8E?style=flat&logo=supabase&logoColor=white)](https://supabase.com)
 [![Recharts](https://img.shields.io/badge/Recharts-latest-22B5BF?style=flat)](https://recharts.org)
 
-<blockquote>
-  <i><b>Bridging Agriculture & Technology for a Stronger India</b></i>
-</blockquote>
 
 KrishiLink is a digital platform that helps farmers access fair prices, expert guidance, weather updates, and connects them directly to buyers — eliminating middlemen.
 
