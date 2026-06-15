@@ -4,12 +4,10 @@ import { TooltipProvider } from "@/components/ui/tooltip";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { BrowserRouter, Routes, Route, Navigate } from "react-router-dom";
 import { AuthProvider, useAuth } from "@/contexts/AuthContext";
-import { LanguageProvider } from "@/contexts/LanguageContext";
 import Index from "./pages/Index";
 import NotFound from "./pages/NotFound";
 import FarmerDashboard from "./pages/FarmerDashboard";
 import BuyerDashboard from "./pages/BuyerDashboard";
-import AdminDashboard from "./pages/AdminDashboard";
 import Profile from "./pages/Profile";
 import AuthCallback from "./pages/AuthCallback";
 
@@ -36,8 +34,6 @@ const DashboardRouter = () => {
       return <FarmerDashboard />;
     case 'buyer':
       return <BuyerDashboard />;
-    case 'admin':
-      return <AdminDashboard />;
     default:
       return <FarmerDashboard />;
   }
@@ -46,7 +42,6 @@ const DashboardRouter = () => {
 const App = () => (
   <QueryClientProvider client={queryClient}>
     <AuthProvider>
-      <LanguageProvider>
         <TooltipProvider>
           <Toaster />
           <Sonner />
@@ -57,13 +52,11 @@ const App = () => (
               <Route path="/dashboard" element={<DashboardRouter />} />
               <Route path="/farmer-dashboard" element={<FarmerDashboard />} />
               <Route path="/buyer-dashboard" element={<BuyerDashboard />} />
-              <Route path="/admin-dashboard" element={<AdminDashboard />} />
               <Route path="/profile" element={<Profile />} />
               <Route path="*" element={<NotFound />} />
             </Routes>
           </BrowserRouter>
         </TooltipProvider>
-      </LanguageProvider>
     </AuthProvider>
   </QueryClientProvider>
 );
