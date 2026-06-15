@@ -42,8 +42,9 @@ const getRawLocation = (formatted: string) => {
 
   for (const rawCities of Object.values(stateDistricts)) {
     for (const rawCity of rawCities) {
-      if (normalizeCity(rawCity) === normalizedFormatted) {
-        return rawCity;
+      const cityName = typeof rawCity === 'string' ? rawCity : rawCity?.name;
+      if (typeof cityName === 'string' && normalizeCity(cityName) === normalizedFormatted) {
+        return cityName;
       }
     }
   }
