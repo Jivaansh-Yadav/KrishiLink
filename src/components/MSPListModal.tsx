@@ -31,7 +31,7 @@ export const MSPListModal: React.FC<MSPListModalProps> = ({ open, onOpenChange }
         <DialogHeader>
           <DialogTitle className="flex items-center gap-2">
             <IndianRupee className="h-5 w-5 text-primary" />
-            Minimum Support Prices (MSP) 2024-25
+            Minimum Support Prices (MSP) 2025-26
           </DialogTitle>
         </DialogHeader>
 
