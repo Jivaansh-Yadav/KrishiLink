@@ -1,5 +1,5 @@
 // Auto-generated state-wise districts mapping with lat/lon
-export const stateDistricts: Record<string, { name: string; lat: number | null; lon: number | null }[]> = {
+export const stateDistricts: Record<string, { name: string; lat: number; lon: number}[]> = {
   "Andhra Pradesh": [
     { name: "Anantapur", lat: 14.67784, lon: 77.60813 },
     { name: "Chittoor", lat: 13.21055, lon: 79.0956 },
