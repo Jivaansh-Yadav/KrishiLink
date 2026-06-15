@@ -41,3 +41,15 @@ export const mspRates = [
   { crop: 'Onion / प्याज',                         msp: 800,   category: 'Vegetable (MIS)' },
   { crop: 'Potato / आलू',                          msp: 500,   category: 'Vegetable (MIS)' },
 ];
+
+export const cropTypes = [
+  'Cereals',
+  'Pulses',
+  'Oilseeds',
+  'Vegetables',
+  'Fruits',
+  'Spices',
+  'Commercial Crops',
+  'Fibers',
+  'Other',
+];
