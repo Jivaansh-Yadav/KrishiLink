@@ -94,19 +94,25 @@ You MUST respond with valid JSON in this exact format (no markdown, no code bloc
       requestBody = { contents: [{ parts }] };
     } else if (body.mode === "weather-summary") {
       const prompt = `You are an agricultural weather advisor for Indian farmers.
-Given this weather data for ${body.location || "the farm"}: ${JSON.stringify(body.weather).substring(0, 2000)}
+Weather JSON for ${body.location || "the farm"} (Open-Meteo): ${JSON.stringify(body.weather).substring(0, 6000)}
 
-Provide insights in Hindi unless another language is explicitly requested. Use internet information if needed to interpret the latest weather conditions and farming impact.
+Respond in Hindi unless another language is explicitly requested. Be concise and practical.
 
-Return ONLY valid JSON (no markdown) in this exact shape:
+Return ONLY valid JSON (no markdown) in this EXACT shape:
 {
   "severity": "green" | "yellow" | "red",
-  "headline": "max 8 words plain-English status",
-  "summary": "1 short sentence (max 22 words) about today's weather impact on farming",
-  "do": ["short do tip 1", "short do tip 2"],
-  "dont": ["short don't tip 1", "short don't tip 2"]
+  "headline": "max 8 words status",
+  "summary": "1 short sentence (max 22 words) about today's impact on farming",
+  "categories": {
+    "immediate": { "title": "Immediate / Daily Use", "points": ["temperature note", "rainfall amount + probability note", "humidity note", "wind/spraying note", "UV note"] },
+    "crop_field": { "title": "Crop & Field Decisions", "points": ["7-14 day rainfall + irrigation tip", "soil temperature + germination", "evapotranspiration + soil moisture", "dry-spell + harvest window"] },
+    "pest_disease": { "title": "Pest & Disease Risk", "points": ["dew point + leaf-wetness risk", "consecutive rainy days + waterlogging/fungal risk"] },
+    "seasonal": { "title": "Seasonal Planning", "points": ["monsoon onset hint", "frost / rabi planning hint"] }
+  },
+  "do": ["short do tip 1", "short do tip 2", "short do tip 3"],
+  "dont": ["short don't tip 1", "short don't tip 2", "short don't tip 3"]
 }
-Severity rules: green = safe normal conditions; yellow = caution (heat, light rain, wind, humidity issues); red = danger (heavy rain, storm, extreme heat/cold, frost). Keep every tip under 8 words.`;
+Severity rules: green = safe; yellow = caution (heat, light rain, wind, humidity, UV); red = danger (heavy rain, storm, extreme heat/cold, frost, strong winds). Keep every point under 16 words.`;
       requestBody = { contents: [{ parts: [{ text: prompt }] }] };
     } else {
       return new Response(JSON.stringify({ error: "Invalid mode" }), {
