@@ -174,7 +174,7 @@ export const WeatherCard: React.FC<WeatherCardProps> = ({ location = 'Delhi' }) 
       open={showDetail}
       onOpenChange={setShowDetail}
       weather={weather as any}
-      location={location}
+      location={coords.name}
       onRefresh={fetchWeather}
       refreshing={refreshing}
     />
