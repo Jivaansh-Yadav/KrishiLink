@@ -3,7 +3,7 @@ import { useNavigate } from 'react-router-dom';
 import { supabase } from '@/integrations/supabase/client';
 import { useToast } from '@/hooks/use-toast';
 import { indianStates } from '@/data/indianStates';
-import { stateCitiesFormatted } from '@/data/cities';
+import { stateDistricts } from '@/data/districts';
 import {
   Dialog,
   DialogContent,
@@ -285,7 +285,7 @@ const RegisterModal: React.FC<RegisterModalProps> = ({ open, onOpenChange, onSwi
                 </Select>
               </div>
               <div className="space-y-2">
-                <Label htmlFor="city">City *</Label>
+                <Label htmlFor="city">District *</Label>
                 <Select
                   value={formData.city}
                   onValueChange={(value) => setFormData(prev => ({ ...prev, city: value }))}
@@ -295,7 +295,7 @@ const RegisterModal: React.FC<RegisterModalProps> = ({ open, onOpenChange, onSwi
                     <SelectValue placeholder={formData.state ? 'Select city' : 'Select state first'} />
                   </SelectTrigger>
                   <SelectContent className="max-h-60">
-                    {(stateCitiesFormatted[formData.state] || []).map((d) => (
+                    {(stateDistricts[formData.state] || []).map((d) => (
                       <SelectItem key={d} value={d}>{d}</SelectItem>
                     ))}
                   </SelectContent>

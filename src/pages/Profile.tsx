@@ -21,7 +21,7 @@ import { useAuth } from '@/contexts/AuthContext';
 import { supabase } from '@/integrations/supabase/client';
 import { toast } from 'sonner';
 import { stateNames } from '@/data/indianStates';
-import { stateCitiesFormatted } from '@/data/cities';
+import { stateDistricts } from '@/data/districts';
 import { useLanguage } from '@/contexts/LanguageContext';
 import { Globe } from 'lucide-react';
 
@@ -408,7 +408,7 @@ const Profile: React.FC = () => {
                   </Select>
                 </div>
                 <div>
-                  <Label htmlFor="city">City</Label>
+                  <Label htmlFor="city">District</Label>
                   <Select
                     value={formData.city}
                     onValueChange={(value) => setFormData({ ...formData, city: value })}
@@ -418,7 +418,7 @@ const Profile: React.FC = () => {
                       <SelectValue placeholder={formData.state ? 'Select city' : 'Select state first'} />
                     </SelectTrigger>
                     <SelectContent className="max-h-60">
-                      {(stateCitiesFormatted[formData.state] || []).map((d) => (
+                      {(stateDistricts[formData.state] || []).map((d) => (
                         <SelectItem key={d} value={d}>{d}</SelectItem>
                       ))}
                     </SelectContent>

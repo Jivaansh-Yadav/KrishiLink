@@ -3,7 +3,7 @@ import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Cloud, Sun, CloudRain, Wind, Droplets, Thermometer, Maximize2 } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { supabase } from '@/integrations/supabase/client';
-import { stateCitiesRaw } from '@/data/cities';
+import { stateDistricts } from '@/data/districts';
 import { WeatherDetailModal } from './WeatherDetailModal';
 
 interface WeatherData {
@@ -40,7 +40,7 @@ const getRawLocation = (formatted: string) => {
   const normalizedFormatted = normalizeCity(formatted);
   if (!normalizedFormatted) return formatted;
 
-  for (const rawCities of Object.values(stateCitiesRaw)) {
+  for (const rawCities of Object.values(stateDistricts)) {
     for (const rawCity of rawCities) {
       if (normalizeCity(rawCity) === normalizedFormatted) {
         return rawCity;
