@@ -105,7 +105,7 @@ const LoginModal: React.FC<LoginModalProps> = ({ open, onOpenChange, onSwitchToR
             mobile_number: meta.mobile_number || null,
             email: data.user.email || '',
             state: meta.state || null,
-            district: meta.district || null,
+            city: meta.city || null,
             village: meta.village || null,
             postal_code: meta.postal_code || null,
             role: meta.role || 'farmer',

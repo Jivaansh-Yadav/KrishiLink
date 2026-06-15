@@ -25,7 +25,7 @@ interface Buyer {
   whatsapp_number?: string | null;
   email: string;
   state: string;
-  district?: string | null;
+  city?: string | null;
   village?: string | null;
   postal_code?: string | null;
   profile_photo?: string | null;
@@ -53,7 +53,7 @@ export const FindBuyersModal: React.FC<FindBuyersModalProps> = ({ open, onOpenCh
     try {
       const { data, error } = await supabase
         .from('users')
-        .select('id, username, first_name, last_name, mobile_number, whatsapp_number, email, state, district, village, postal_code, profile_photo, role')
+        .select('id, username, first_name, last_name, mobile_number, whatsapp_number, email, state, city, village, postal_code, profile_photo, role')
         .eq('role', 'buyer')
         .order('first_name', { ascending: true });
 

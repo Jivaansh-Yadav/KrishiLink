@@ -3,6 +3,7 @@ import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Cloud, Sun, CloudRain, Wind, Droplets, Thermometer, Maximize2 } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { supabase } from '@/integrations/supabase/client';
+import { stateCitiesRaw } from '@/data/cities';
 import { WeatherDetailModal } from './WeatherDetailModal';
 
 interface WeatherData {
@@ -21,36 +22,68 @@ interface WeatherData {
 
 interface WeatherCardProps {
   location?: string;
+  locationRaw?: string;
 }
 
-export const WeatherCard: React.FC<WeatherCardProps> = ({ location = 'Delhi' }) => {
+const normalizeCity = (value: string) =>
+  value
+    .trim()
+    .toLowerCase()
+    .replace(/&amp;/g, '&')
+    .replace(/_/g, ' ')
+    .replace(/\s*[-]\s*/g, ' ')
+    .replace(/\s+/g, ' ')
+    .replace(/\s*\(\s*/g, ' (')
+    .replace(/\s*\)\s*/g, ')');
+
+const getRawLocation = (formatted: string) => {
+  const normalizedFormatted = normalizeCity(formatted);
+  if (!normalizedFormatted) return formatted;
+
+  for (const rawCities of Object.values(stateCitiesRaw)) {
+    for (const rawCity of rawCities) {
+      if (normalizeCity(rawCity) === normalizedFormatted) {
+        return rawCity;
+      }
+    }
+  }
+
+  return formatted;
+};
+
+export const WeatherCard: React.FC<WeatherCardProps> = ({ location = 'Delhi', locationRaw }) => {
   const [weather, setWeather] = useState<WeatherData | null>(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
   const [showDetail, setShowDetail] = useState(false);
+  const [refreshing, setRefreshing] = useState(false);
+
+  const rawLocation = locationRaw || getRawLocation(location);
+
+  const fetchWeather = async () => {
+    try {
+      setLoading(true);
+      setRefreshing(true);
+      const { data, error } = await supabase.functions.invoke('weather', {
+        body: { location: rawLocation },
+      });
+
+      if (error) throw error;
+
+      setWeather(data as WeatherData);
+      setError(null);
+    } catch (err) {
+      console.error('Weather fetch error:', err);
+      setError('Unable to load weather data');
+    } finally {
+      setLoading(false);
+      setRefreshing(false);
+    }
+  };
 
   useEffect(() => {
-    const fetchWeather = async () => {
-      try {
-        setLoading(true);
-        const { data, error } = await supabase.functions.invoke('weather', {
-          body: { location },
-        });
-
-        if (error) throw error;
-
-        setWeather(data as WeatherData);
-        setError(null);
-      } catch (err) {
-        console.error('Weather fetch error:', err);
-        setError('Unable to load weather data');
-      } finally {
-        setLoading(false);
-      }
-    };
-
     fetchWeather();
-  }, [location]);
+  }, [rawLocation]);
 
   const getWeatherIcon = (condition: string) => {
     const lowerCondition = condition.toLowerCase();
@@ -89,7 +122,7 @@ export const WeatherCard: React.FC<WeatherCardProps> = ({ location = 'Delhi' }) 
       <CardHeader className="pb-2 flex flex-row items-center justify-between space-y-0">
         <CardTitle className="text-lg flex items-center gap-2">
           <Cloud className="h-5 w-5" />
-          Weather in {weather.location.name}
+          Weather in {location}
         </CardTitle>
         <Button
           variant="ghost"
@@ -143,6 +176,8 @@ export const WeatherCard: React.FC<WeatherCardProps> = ({ location = 'Delhi' }) 
       onOpenChange={setShowDetail}
       weather={weather as any}
       location={location}
+      onRefresh={fetchWeather}
+      refreshing={refreshing}
     />
     </>
   );

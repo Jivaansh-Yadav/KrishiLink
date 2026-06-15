@@ -117,7 +117,7 @@ const BuyerDashboard: React.FC = () => {
             whatsapp_number,
             email,
             state,
-            district,
+            city,
             village,
             postal_code,
             profile_photo,

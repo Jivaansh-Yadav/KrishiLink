@@ -113,7 +113,7 @@ export type Database = {
         Row: {
           alternate_mobile: string | null
           created_at: string | null
-          district: string
+          city: string
           email: string
           first_name: string
           id: string
@@ -131,7 +131,7 @@ export type Database = {
         Insert: {
           alternate_mobile?: string | null
           created_at?: string | null
-          district: string
+          city: string
           email: string
           first_name: string
           id: string
@@ -149,7 +149,7 @@ export type Database = {
         Update: {
           alternate_mobile?: string | null
           created_at?: string | null
-          district?: string
+          city?: string
           email?: string
           first_name?: string
           id?: string

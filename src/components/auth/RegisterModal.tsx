@@ -3,7 +3,7 @@ import { useNavigate } from 'react-router-dom';
 import { supabase } from '@/integrations/supabase/client';
 import { useToast } from '@/hooks/use-toast';
 import { indianStates } from '@/data/indianStates';
-import { stateDistricts } from '@/data/districts';
+import { stateCitiesFormatted } from '@/data/cities';
 import {
   Dialog,
   DialogContent,
@@ -42,7 +42,7 @@ const RegisterModal: React.FC<RegisterModalProps> = ({ open, onOpenChange, onSwi
     whatsappNumber: '',
     email: '',
     state: '',
-    district: '',
+    city: '',
     village: '',
     postalCode: '',
     role: '' as 'farmer' | 'buyer' | '',
@@ -100,7 +100,7 @@ const RegisterModal: React.FC<RegisterModalProps> = ({ open, onOpenChange, onSwi
             mobile_number: '+91' + formData.mobileNumber,
             whatsapp_number: formData.whatsappNumber ? '+91' + formData.whatsappNumber : null,
             state: formData.state,
-            district: formData.district,
+            city: formData.city,
             village: formData.village,
             postal_code: formData.postalCode,
             role: formData.role,
@@ -139,7 +139,7 @@ const RegisterModal: React.FC<RegisterModalProps> = ({ open, onOpenChange, onSwi
           whatsapp_number: formData.whatsappNumber ? '+91' + formData.whatsappNumber : null,
           email: formData.email,
           state: formData.state,
-          district: formData.district,
+          city: formData.city,
           village: formData.village || null,
           postal_code: formData.postalCode || null,
           role: formData.role as 'farmer' | 'buyer',
@@ -271,7 +271,7 @@ const RegisterModal: React.FC<RegisterModalProps> = ({ open, onOpenChange, onSwi
             <div className="grid grid-cols-2 gap-4">
               <div className="space-y-2">
                 <Label htmlFor="state">State *</Label>
-                <Select value={formData.state} onValueChange={(value) => setFormData(prev => ({ ...prev, state: value, district: '' }))}>
+                <Select value={formData.state} onValueChange={(value) => setFormData(prev => ({ ...prev, state: value, city: '' }))}>
                   <SelectTrigger>
                     <SelectValue placeholder="Select state" />
                   </SelectTrigger>
@@ -285,17 +285,17 @@ const RegisterModal: React.FC<RegisterModalProps> = ({ open, onOpenChange, onSwi
                 </Select>
               </div>
               <div className="space-y-2">
-                <Label htmlFor="district">District *</Label>
+                <Label htmlFor="city">City *</Label>
                 <Select
-                  value={formData.district}
-                  onValueChange={(value) => setFormData(prev => ({ ...prev, district: value }))}
+                  value={formData.city}
+                  onValueChange={(value) => setFormData(prev => ({ ...prev, city: value }))}
                   disabled={!formData.state}
                 >
                   <SelectTrigger>
-                    <SelectValue placeholder={formData.state ? 'Select district' : 'Select state first'} />
+                    <SelectValue placeholder={formData.state ? 'Select city' : 'Select state first'} />
                   </SelectTrigger>
                   <SelectContent className="max-h-60">
-                    {(stateDistricts[formData.state] || []).map((d) => (
+                    {(stateCitiesFormatted[formData.state] || []).map((d) => (
                       <SelectItem key={d} value={d}>{d}</SelectItem>
                     ))}
                   </SelectContent>

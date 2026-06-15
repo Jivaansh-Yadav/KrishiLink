@@ -21,7 +21,7 @@ import { useAuth } from '@/contexts/AuthContext';
 import { supabase } from '@/integrations/supabase/client';
 import { toast } from 'sonner';
 import { stateNames } from '@/data/indianStates';
-import { stateDistricts } from '@/data/districts';
+import { stateCitiesFormatted } from '@/data/cities';
 import { useLanguage } from '@/contexts/LanguageContext';
 import { Globe } from 'lucide-react';
 
@@ -41,7 +41,7 @@ const Profile: React.FC = () => {
     mobileNumber: '',
     whatsappNumber: '',
     state: '',
-    district: '',
+    city: '',
     village: '',
     postalCode: '',
   });
@@ -67,7 +67,7 @@ const Profile: React.FC = () => {
         mobileNumber: profile.mobile_number || '',
         whatsappNumber: (profile as any).whatsapp_number || '',
         state: profile.state || '',
-        district: profile.district || '',
+        city: profile.city || '',
         village: (profile as any).village || '',
         postalCode: (profile as any).postal_code || '',
       });
@@ -133,7 +133,7 @@ const Profile: React.FC = () => {
           whatsapp_number: formData.whatsappNumber || null,
           email: formData.email,
           state: formData.state,
-          district: formData.district,
+          city: formData.city,
           village: formData.village || null,
           postal_code: formData.postalCode || null,
         })
@@ -395,7 +395,7 @@ const Profile: React.FC = () => {
                   </Label>
                   <Select
                     value={formData.state}
-                    onValueChange={(value) => setFormData({ ...formData, state: value, district: '' })}
+                    onValueChange={(value) => setFormData({ ...formData, state: value, city: '' })}
                   >
                     <SelectTrigger>
                       <SelectValue placeholder="Select your state" />
@@ -408,17 +408,17 @@ const Profile: React.FC = () => {
                   </Select>
                 </div>
                 <div>
-                  <Label htmlFor="district">District</Label>
+                  <Label htmlFor="city">City</Label>
                   <Select
-                    value={formData.district}
-                    onValueChange={(value) => setFormData({ ...formData, district: value })}
+                    value={formData.city}
+                    onValueChange={(value) => setFormData({ ...formData, city: value })}
                     disabled={!formData.state}
                   >
                     <SelectTrigger>
-                      <SelectValue placeholder={formData.state ? 'Select district' : 'Select state first'} />
+                      <SelectValue placeholder={formData.state ? 'Select city' : 'Select state first'} />
                     </SelectTrigger>
                     <SelectContent className="max-h-60">
-                      {(stateDistricts[formData.state] || []).map((d) => (
+                      {(stateCitiesFormatted[formData.state] || []).map((d) => (
                         <SelectItem key={d} value={d}>{d}</SelectItem>
                       ))}
                     </SelectContent>

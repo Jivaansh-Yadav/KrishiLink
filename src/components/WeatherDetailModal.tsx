@@ -5,7 +5,7 @@ import { Badge } from '@/components/ui/badge';
 import {
   Cloud, Sun, CloudRain, Wind, Droplets, Thermometer,
   Sunrise, Sunset, CalendarDays, AlertTriangle, CheckCircle2, ShieldAlert,
-  Sparkles, Loader2, Gauge, Moon,
+  Sparkles, Loader2, Gauge, Moon, RotateCcw,
 } from 'lucide-react';
 import { supabase } from '@/integrations/supabase/client';
 
@@ -48,6 +48,8 @@ interface Props {
   onOpenChange: (v: boolean) => void;
   weather: WeatherDetail | null;
   location?: string;
+  onRefresh?: () => void;
+  refreshing?: boolean;
 }
 
 const severityStyles: Record<string, { bg: string; text: string; icon: React.ReactNode; label: string }> = {
@@ -56,7 +58,7 @@ const severityStyles: Record<string, { bg: string; text: string; icon: React.Rea
   red: { bg: 'bg-red-500/10 border-red-500/30', text: 'text-red-700 dark:text-red-400', icon: <ShieldAlert className="h-5 w-5" />, label: 'Warning' },
 };
 
-export const WeatherDetailModal: React.FC<Props> = ({ open, onOpenChange, weather, location }) => {
+export const WeatherDetailModal: React.FC<Props> = ({ open, onOpenChange, weather, location, onRefresh, refreshing }) => {
   const [aiSummary, setAiSummary] = useState<AiSummary | null>(null);
   const [aiLoading, setAiLoading] = useState(false);
 
@@ -98,10 +100,27 @@ export const WeatherDetailModal: React.FC<Props> = ({ open, onOpenChange, weathe
     <Dialog open={open} onOpenChange={onOpenChange}>
       <DialogContent className="max-w-2xl max-h-[90vh] overflow-y-auto">
         <DialogHeader>
-          <DialogTitle className="flex items-center gap-2">
-            <Cloud className="h-5 w-5" />
-            Weather Details — {weather.location.name}
-          </DialogTitle>
+          <div className="flex items-center justify-between gap-2">
+            <DialogTitle className="flex items-center gap-2">
+              <Cloud className="h-5 w-5" />
+              Weather Details — {weather.location.name}
+            </DialogTitle>
+            {onRefresh && (
+              <button
+                type="button"
+                onClick={onRefresh}
+                disabled={refreshing}
+                className="inline-flex h-8 w-8 items-center justify-center rounded-full border border-input bg-background text-muted-foreground hover:border-primary hover:text-primary disabled:cursor-not-allowed disabled:opacity-50"
+                aria-label="Refresh weather data"
+              >
+                {refreshing ? (
+                  <Loader2 className="h-4 w-4 animate-spin" />
+                ) : (
+                  <RotateCcw className="h-4 w-4" />
+                )}
+              </button>
+            )}
+          </div>
         </DialogHeader>
 
         <div className="space-y-4">
