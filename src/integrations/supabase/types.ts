@@ -113,7 +113,7 @@ export type Database = {
         Row: {
           alternate_mobile: string | null
           created_at: string | null
-          city: string
+          district: string
           email: string
           first_name: string
           id: string
@@ -131,7 +131,7 @@ export type Database = {
         Insert: {
           alternate_mobile?: string | null
           created_at?: string | null
-          city: string
+          district: string
           email: string
           first_name: string
           id: string
@@ -149,7 +149,7 @@ export type Database = {
         Update: {
           alternate_mobile?: string | null
           created_at?: string | null
-          city?: string
+          district?: string
           email?: string
           first_name?: string
           id?: string
@@ -181,7 +181,7 @@ export type Database = {
     }
     Enums: {
       app_role: "farmer" | "buyer" | "admin"
-      user_role: "farmer" | "buyer" | "admin"
+      user_role: "farmer" | "buyer"
     }
     CompositeTypes: {
       [_ in never]: never
@@ -310,7 +310,7 @@ export const Constants = {
   public: {
     Enums: {
       app_role: ["farmer", "buyer", "admin"],
-      user_role: ["farmer", "buyer", "admin"],
+      user_role: ["farmer", "buyer"],
     },
   },
 } as const

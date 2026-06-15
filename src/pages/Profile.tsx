@@ -418,9 +418,10 @@ const Profile: React.FC = () => {
                       <SelectValue placeholder={formData.state ? 'Select city' : 'Select state first'} />
                     </SelectTrigger>
                     <SelectContent className="max-h-60">
-                      {(stateDistricts[formData.state] || []).map((d) => (
-                        <SelectItem key={d} value={d}>{d}</SelectItem>
-                      ))}
+                      {(stateDistricts[formData.state] || []).map((d) => {
+                        const name = typeof d === 'string' ? d : d.name;
+                        return <SelectItem key={name} value={name}>{name}</SelectItem>;
+                      })}
                     </SelectContent>
                   </Select>
                 </div>
