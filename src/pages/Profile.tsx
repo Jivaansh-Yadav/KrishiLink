@@ -186,8 +186,6 @@ const Profile: React.FC = () => {
       navigate('/farmer-dashboard');
     } else if (profile?.role === 'buyer') {
       navigate('/buyer-dashboard');
-    } else if (profile?.role === 'admin') {
-      navigate('/admin-dashboard');
     } else {
       navigate('/');
     }
