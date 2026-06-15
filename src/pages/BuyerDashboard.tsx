@@ -22,7 +22,7 @@ import {
 import { useAuth } from '@/contexts/AuthContext';
 import { supabase } from '@/integrations/supabase/client';
 import { toast } from 'sonner';
-import { cropTypes } from '@/data/indianStates';
+import { cropTypes } from '@/data/Crops';
 import { UserDetailModal, UserDetail } from '@/components/UserDetailModal';
 
 

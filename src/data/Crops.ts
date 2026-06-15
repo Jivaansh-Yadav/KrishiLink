@@ -1,0 +1,38 @@
+
+export const cropTypes = [
+  'Cereals',
+  'Pulses',
+  'Oilseeds',
+  'Vegetables',
+  'Fruits',
+  'Spices',
+  'Commercial Crops',
+  'Fibers',
+  'Other',
+];
+
+export const mspRates = [
+  { crop: 'Paddy (Common)', msp: 2300, category: 'Kharif' },
+  { crop: 'Paddy (Grade A)', msp: 2320, category: 'Kharif' },
+  { crop: 'Jowar (Hybrid)', msp: 3371, category: 'Kharif' },
+  { crop: 'Bajra', msp: 2625, category: 'Kharif' },
+  { crop: 'Ragi', msp: 4290, category: 'Kharif' },
+  { crop: 'Maize', msp: 2225, category: 'Kharif' },
+  { crop: 'Tur (Arhar)', msp: 7550, category: 'Kharif' },
+  { crop: 'Moong', msp: 8682, category: 'Kharif' },
+  { crop: 'Urad', msp: 7400, category: 'Kharif' },
+  { crop: 'Groundnut', msp: 6783, category: 'Kharif' },
+  { crop: 'Sunflower Seed', msp: 7280, category: 'Kharif' },
+  { crop: 'Soyabean (Yellow)', msp: 4892, category: 'Kharif' },
+  { crop: 'Sesamum', msp: 9267, category: 'Kharif' },
+  { crop: 'Cotton (Medium)', msp: 7121, category: 'Kharif' },
+  { crop: 'Wheat', msp: 2425, category: 'Rabi' },
+  { crop: 'Barley', msp: 1980, category: 'Rabi' },
+  { crop: 'Gram', msp: 5650, category: 'Rabi' },
+  { crop: 'Masur (Lentil)', msp: 6700, category: 'Rabi' },
+  { crop: 'Rapeseed & Mustard', msp: 5950, category: 'Rabi' },
+  { crop: 'Safflower', msp: 5940, category: 'Rabi' },
+  { crop: 'Copra (Milling)', msp: 11160, category: 'Commercial' },
+  { crop: 'Jute', msp: 5335, category: 'Commercial' },
+  { crop: 'Sugarcane', msp: 3150, category: 'Commercial' },
+];

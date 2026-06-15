@@ -20,7 +20,7 @@ import { Upload, Loader2, Plus, X } from 'lucide-react';
 import { toast } from 'sonner';
 import { supabase } from '@/integrations/supabase/client';
 import { useAuth } from '@/contexts/AuthContext';
-import { cropTypes } from '@/data/indianStates';
+import { cropTypes } from '@/data/Crops';
 import { MSPListModal } from '@/components/MSPListModal';
 
 interface AddCropModalProps {

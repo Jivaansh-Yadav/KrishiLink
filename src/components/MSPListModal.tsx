@@ -8,7 +8,7 @@ import {
 import { Input } from '@/components/ui/input';
 import { Badge } from '@/components/ui/badge';
 import { Search, IndianRupee } from 'lucide-react';
-import { mspRates } from '@/data/indianStates';
+import { mspRates } from '@/data/Crops';
 
 interface MSPListModalProps {
   open: boolean;
