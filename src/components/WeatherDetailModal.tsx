@@ -127,14 +127,16 @@ export const WeatherDetailModal: React.FC<Props> = ({ open, onOpenChange, weathe
                 type="button"
                 onClick={onRefresh}
                 disabled={refreshing}
-                className="inline-flex h-8 w-8 items-center justify-center rounded-full border border-input bg-background text-muted-foreground hover:border-primary hover:text-primary disabled:cursor-not-allowed disabled:opacity-50"
+                className="mr-8 inline-flex h-8 items-center gap-1.5 rounded-full border border-input bg-background px-3 text-sm text-muted-foreground hover:border-primary hover:text-primary disabled:cursor-not-allowed disabled:opacity-50"
                 aria-label="Refresh weather data"
               >
                 {refreshing ? <Loader2 className="h-4 w-4 animate-spin" /> : <RotateCcw className="h-4 w-4" />}
+                <span>Refresh</span>
               </button>
             )}
           </div>
         </DialogHeader>
+
 
         <div className="space-y-4">
           {/* AI Advisory */}
