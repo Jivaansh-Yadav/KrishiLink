@@ -24,6 +24,8 @@ Built for the <abbr title="Indian Farmers">*hands that feed the nation*</abbr> w
 # 🌐 The Prototype
 <i><b>https://krishilink.pages.dev/</b></i>
 
+https://github.com/user-attachments/assets/a3352c35-47d4-4690-9ad8-4322a432d2b4
+
 # 🎯 Vision
 Farmers constitute more than 54% of the Indian population, but the support provided or the status and acknowledgment given to them for their work is quite minimal. Farmers are exploited by dealers and middlemen and often do not recieve the capital they were entitled to for their produce.
 
